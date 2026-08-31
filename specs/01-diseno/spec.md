@@ -31,7 +31,7 @@
 |---|---|---|
 | `L` | Letras | `a-z`; `A-Z`;`_` | 
 | `D` | Digitos | `0-9` |
-| `SIM` | Simbolos| `+`,`-`,`*`,`/`,`(`,`)`,`{`,`}`,`;`,`,`,`=`,<,>`,`!` |
+| `SIM` | Simbolos| `+`,`-`,`*`,`/`,`(`,`)`,`{`,`}`,`;`,`,`,`=`,`<`,`>`,`!`,`"` |
 | `BL` | Blanco | Espacio en blanco, tabuladores, saltos de línea | 
 | `OTRO` | No reconocido |cualquier otro carácter → error léxico |
 
@@ -51,10 +51,37 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 
 | Código | Token | Lexema |
 |---|---|---|
+| 256 | `ID` | `Identificador` | 
+| 257 | `CTE_ENTERA` | `entero` | 
+| 258 | `INT` | `int` |
+| 259 | `CADENA` | `literal de texto` | 
+| 260 | `MAIN` | `main` |
+| 261 | `FUNC` | `function` |
+| 262 | `RET` | `return` |
+| 263 | `PRINT` | `print` |
+| 264 | `IF` | `if` |
+| 265 | `ELSE` | `else` |
+| 266 | `WHILE` | `while` |
+| 267 | `AND` | `and` |
+| 268 | `OR` | `or` |
+| 269 | `ASIG` | `=` |
+| 270 | `IGUAL` | `==` |
+| 271 | `MAYOR` | `>` |
+| 272 | `MENOR` | `<` |
+| 273 | `MENOR_E` | `<=` |
+| 274 | `MAYOR_E` | `>=` |
+| 275 | `DISTINTO` | `!=` |
+| - | literales | `+` `-` `*` `/` `(` `)` `{` `}` `;` `,` |
+
 
 ---
 
 ## 5. Estructura del programa
+La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main` es la funcion que se ejecuta al inicio del programa.
+
+- Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), y un bloque de código delimitado por llaves `{` `}` y retornan un valor entero.
+- 
+- 
 
 
 ---
@@ -62,7 +89,64 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 ## 6. Gramática
 
 ```
-<programa>      ::= 
+<programa>      ::=  <lista_funciones>
+
+<lista_funciones> ::= <lista_funciones> <funcion> | <funcion>
+
+<funcion>       ::= FUNC ID '(' <lista_pfunc> ')' <bloque> | FUNC ID '(' ')' <bloque> | FUNC MAIN '(' ')' <bloque>
+
+<lista_pfunc> ::= <lista_pfunc> ',' INT ID | INT ID
+
+<bloque>   ::= '{' <sentencias> '}' | '{' '}'
+
+<sentencias> ::= <sentencias> <sentencia> | <sentencia>
+
+<sentencia> ::= <declaracion> | <asignacion> | <seleccion> | <iteracion> | <salida> | <retorno> | <bloque>
+
+<declaracion> ::= INT <lista_ids> ';' 
+
+<lista_ids> ::= <lista_ids> ',' ID | ID
+
+<asignacion> ::= ID ASIG <expresion_log> ';'
+
+<seleccion> ::= IF '(' <expresion_log> ')' <bloque> ELSE <bloque> | IF '(' <expresion_log> ')' <bloque>
+
+<iteracion> ::= WHILE '(' <expresion_log> ')' <bloque>
+
+<salida> ::= PRINT '(' <expresion_log> ')' ';' | PRINT '(' CADENA ')' ';' | PRINT '('CADENA','CADENA')' ';'
+
+<retorno> ::= RET <expresion_log> ';'
+
+<expresion_log> ::= <expresion_log> OR <term_log>  |  <term_log> 
+
+<term_log> ::= <term_log>  AND <factor_log> | <factor_log>
+
+<factor_log> ::= <expresion_relacional> 
+
+<expresion_relacional> ::= <expresion_aritmetica> <comparador> <expresion_aritmetica> | <expresion_aritmetica>
+
+<comparador> ::= IGUAL | MAYOR | MENOR | MAYOR_E | MENOR_E | DISTINTO
+
+<expresion_aritmetica> ::= <expresion_aritmetica> '+' <termino> | <expresion_aritmetica> '-' <termino> | <termino>
+
+<termino> ::= <termino> '*' <factor> | <termino> '/' <factor> | <factor>
+
+<factor> ::= ID | CTE_ENTERA | '(' <expresion_log> ')' | <llamada_funcional>
+
+<llamada_funcional> ::= ID '(' <lista_parametros> ')' | ID '(' ')'
+
+<lista_parametros> ::= <lista_parametros> ',' <expresion_log> | <expresion_log>
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 **Notas sobre la gramática**
@@ -89,9 +173,28 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 
 ```
 
+function main() { 
+    int i, suma;
+
+    i= 1;
+    suma = 0;
+    while (i<=5){
+        suma = suma + i;
+        i = i + 1;
+        if(i == 6){
+            print("ultima vuelta");
+        } 
+    }
+
+    print("la suma total es: ", suma);
+    
+    return 0;
+}
+
 ```
 
-Salida esperada: 
+Salida esperada: ultima vuelta
+                la suma total es: 15
 
 ---
 
