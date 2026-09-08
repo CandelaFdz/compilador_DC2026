@@ -9,13 +9,13 @@
 
 | # | Decisión | Valor |
 |---|---|---|
-| D1 | Tipo de datos | Un solo tipo:entero con signo de 32 bits |
+| D1 | Tipo de datos | Un solo tipo: entero con signo de 32 bits |
 | D2 | Rango numerico | −2.147.483.648 a 2.147.483.647 |
-| D3 | Declaracion y orden | Obligatoria, pero no se exigen orden previo una variable puede utilizarse antes de ser declarada |
-| D4 | Alcance y visibilidad | Ambitos anidados con variables locales dentro de funciones y estructuras de control(if, while). Pueden anidarse una cantidad arbitraria de veces |
-| D5 | Sencibilidad a mayúsculas | Sí |
+| D3 | Declaracion y orden | Obligatoria, pero no se exige orden previo. Una variable puede utilizarse antes de ser declarada |
+| D4 | Alcance y visibilidad | Ambitos anidados con variables locales dentro de funciones y estructuras de control (if, while). Pueden anidarse una cantidad arbitraria de veces |
+| D5 | Sensibilidad a mayúsculas | Sí |
 | D6 | Longitud máxima de identificador | 20 caracteres, se trunca con advertencia en el caso de ser mas largo | 
-| D7 | Comentarios | De bloque `(/* ... */)`. El léxico los descarta íntegramente. |    
+| D7 | Comentarios | De bloque `(/* ... */)`. El léxico los descarta íntegramente |    
 | D8 | Resultado de una comparacion | Valor entero: 0 para falso y -1 para verdadero. Puede asignarse a una variable y operarse aritmeticamente |    
 | D9 | División por cero | Error en ejecucion |    
 | D10 | Plataforma destino | x86-64, MASM sobre windows |
@@ -33,7 +33,7 @@
 | `D` | Digitos | `0-9` |
 | `SIM` | Simbolos| `+`,`-`,`*`,`/`,`(`,`)`,`{`,`}`,`;`,`,`,`=`,`<`,`>`,`!`,`"` |
 | `BL` | Blanco | Espacio en blanco, tabuladores, saltos de línea | 
-| `OTRO` | No reconocido |cualquier otro carácter → error léxico |
+| `OTRO` | No reconocido | Cualquier otro carácter → error léxico |
 
 
 ---
@@ -95,7 +95,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <funcion>       ::= FUNC ID '(' <lista_pfunc> ')' <bloque> | FUNC ID '(' ')' <bloque> | FUNC MAIN '(' ')' <bloque>
 
-<lista_pfunc> ::= <lista_pfunc> ',' INT ID | INT ID
+<lista_pfunc> ::= INT ID ',' INT ID ',' INT ID | INT ID ',' INT ID | INT ID
 
 <bloque>   ::= '{' <sentencias> '}' | '{' '}'
 
@@ -113,7 +113,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <iteracion> ::= WHILE '(' <expresion_log> ')' <bloque>
 
-<salida> ::= PRINT '(' <expresion_log> ')' ';' | PRINT '(' CADENA ')' ';' | PRINT '('CADENA','CADENA')' ';'
+<salida> ::= PRINT '(' <expresion_log> ')' ';' | PRINT '(' CADENA ')' ';' | PRINT '(' CADENA ',' <expresion_log> ')' ';'
 
 <retorno> ::= RET <expresion_log> ';'
 
@@ -135,7 +135,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <llamada_funcional> ::= ID '(' <lista_parametros> ')' | ID '(' ')'
 
-<lista_parametros> ::= <lista_parametros> ',' <expresion_log> | <expresion_log>
+<lista_parametros> ::= <expresion_log> ',' <expresion_log> ',' <expresion_log> | <expresion_log> ',' <expresion_log> | <expresion_log>
 
 
 
