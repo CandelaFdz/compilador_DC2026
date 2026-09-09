@@ -23,6 +23,7 @@
 | D12 | Sentencia de E/S | setencia print para mostrar valores numericos y literales de texto entre comillas dobles |
 | D13 | Estructura del programa | Conjunto de funciones. El punto de entrada es una función con el nombre reservado main |
 
+
 ---
 
 ## 2. Alfabeto
@@ -36,7 +37,9 @@
 | `OTRO` | No reconocido |cualquier otro carácter → error léxico |
 
 
+
 ---
+
 
 ## 3. Palabras reservadas
 
@@ -49,10 +52,11 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 
 ## 4. Tabla de tokens
 
+
 | Código | Token | Lexema |
 |---|---|---|
 | 256 | `ID` | `Identificador` | 
-| 257 | `CTE_ENTERA` | `entero` | 
+| 257 | `CTE` | `entero` | 
 | 258 | `INT` | `int` |
 | 259 | `CADENA` | `literal de texto` | 
 | 260 | `MAIN` | `main` |
@@ -71,12 +75,22 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 | 273 | `MENOR_E` | `<=` |
 | 274 | `MAYOR_E` | `>=` |
 | 275 | `DISTINTO` | `!=` |
-| - | literales | `+` `-` `*` `/` `(` `)` `{` `}` `;` `,` |
+| 276 | `SUMA` | `+` |
+| 277 | `RESTA` | `-` |
+| 278 | `MULTIPLICAR` | `*` |
+| 279 | `DIVISION` | `/` |
+| 280 | `PARENTESIS_I` | `(` |
+| 281 | `PARENTESIS_D` | `)` |
+| 282 | `LLAVE_I` | `{` |
+| 283 | `LLAVE_D` | `}` |
+| 284 | `PUNTO` | `;` |
+| 285 | `COMA` | `,` |
 
 
 ---
 
 ## 5. Estructura del programa
+
 La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main` es la funcion que se ejecuta al inicio del programa.
 
 - Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), y un bloque de código delimitado por llaves `{` `}` y retornan un valor entero.
@@ -137,20 +151,9 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <lista_parametros> ::= <lista_parametros> ',' <expresion_log> | <expresion_log>
 
-
-
-
-
-
-
-
-
-
-
 ```
 
 **Notas sobre la gramática**
-
 
 ---
 
@@ -169,10 +172,10 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 ---
 
-## 9. Programa de ejemplo
+## 9. Programas de ejemplo
 
 ```
-
+PROGRAMA 1
 function main() { 
     int i, suma;
 
@@ -194,7 +197,34 @@ function main() {
 ```
 
 Salida esperada: ultima vuelta
-                la suma total es: 15
+la suma total es: 15
+
+```
+PROGRAMA 2
+function main() {
+    int x;
+    x = 10;
+
+    print("Valor de x en main:", x);
+
+    if (x > 0) {
+        int x;      
+        x = 99;
+
+        print("Valor de x en el if", x);
+    }
+
+    print("Valor de x en main:", x);
+
+    return 0;
+}
+
+```
+
+Salida esperada: 
+Valor de x en el main 10
+Valor de x en el if: 99
+Valor de x en el main: 10
 
 ---
 
