@@ -91,7 +91,7 @@ produzca la lista completa.
 | f7 | Agrega el caracter al string del literal de texto |
 | f8 | Cierra el token de un simbolo u operador simple |
 | f_err | Reporta un error lexico |
-| fn | No hace nada|
+| fn | No hace nada |
 
 
 ---
