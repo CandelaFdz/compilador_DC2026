@@ -20,7 +20,7 @@
 | D9 | División por cero | Error en ejecucion |    
 | D10 | Plataforma destino | x86-64, MASM sobre windows |
 | D11 | Evaluacion logica | Evaluacion en cortocircuito de and y or |
-| D12 | Sentencia de E/S | sentencia print para mostrar valores numericos y literales de texto entre comillas dobles |
+| D12 | Sentencia de E/S | Sentencia print para mostrar valores numericos y literales de texto entre comillas dobles |
 | D13 | Estructura del programa | Conjunto de funciones. El punto de entrada es una función con el nombre reservado main |
 
 
@@ -145,7 +145,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <termino> ::= <termino> '*' <factor> | <termino> '/' <factor> | <factor>
 
-<factor> ::= ID | CTE_ENTERA | '(' <expresion_log> ')' | <llamada_funcional>
+<factor> ::= ID | CTE | '(' <expresion_log> ')' | <llamada_funcional>
 
 <llamada_funcional> ::= ID '(' <lista_parametros> ')' | ID '(' ')'
 
