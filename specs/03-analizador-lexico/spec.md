@@ -124,7 +124,7 @@ produzca la lista completa.
 | 8 (=) | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | e9-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn |
 | 9 (==) | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn |
 | 10 (!) | ERR-f_err | ERR | ERR | ERR | ERR | f-fn | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | ERR | 
-| 11 (") | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | F-f8 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | ERR | e11-f7 | 
+| 11 (") | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | F-fn | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | e11-f7 | ERR | e11-f7 | 
 | 12 (-) | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn | Fu-fn |
 | 13 (+) | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn |
 | 14 (*) | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn | FU-fn |
