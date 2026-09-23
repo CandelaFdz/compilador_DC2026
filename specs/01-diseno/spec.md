@@ -145,7 +145,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <termino> ::= <termino> '*' <factor> | <termino> '/' <factor> | <factor>
 
-<factor> ::= ID | CTE_ENTERA | '(' <expresion_log> ')' | <llamada_funcional>
+<factor> ::= ID | CTE | '(' <expresion_log> ')' | <llamada_funcional>
 
 <llamada_funcional> ::= ID '(' <lista_parametros> ')' | ID '(' ')'
 
