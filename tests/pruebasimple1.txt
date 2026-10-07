@@ -1,0 +1,7 @@
+function main() {
+    int x;
+    x = 10;
+    print("El valor es");
+    print(x);
+    return 0;
+}
