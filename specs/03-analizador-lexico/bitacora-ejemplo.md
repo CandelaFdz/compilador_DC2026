@@ -47,6 +47,14 @@
 
 **Impacto en la spec:** Dejó el código mucho más fácil de leer y ordenado, evitando saltos bruscos en la ejecución.
 
+## Iteración 5 — Adaptar la logica
+**Fecha:** 8/10/2026 · Gemini Pro
 
+**Qué pedí:** Le pedí que cambie la lógica anterior (que leía continuamente mientras el token no estuviera terminado) por una basada en un seudocódigo que le pasé, con un bucle while que se ejecuta hasta que el estado final sea alcanzado, ya que anteriormente la logica buscaba ser mas optima para PLY pero no era una representacion exacta de mi automata. 
 
+**Qué devolvió:** El código modificado estrictamente con la lógica estructurada de dos while que le pedí, implementado de forma más sencilla y clara.
+
+**Qué cambié y por qué:** Cambié la forma de lectura. Ahora hay un while exterior que controla la lectura del archivo completo y un while interior que arma el token hasta chocar con el estado final (-1), asi demuestrando el paso a paso manual de la lectura.
+
+**Impacto en la spec:** Cumple la logica que buscaba.
 

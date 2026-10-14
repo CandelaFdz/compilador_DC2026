@@ -95,8 +95,6 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 - Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), y un bloque de código delimitado por llaves `{` `}` y retornan un valor entero.
 - 
-- 
-
 
 ---
 
@@ -153,9 +151,6 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 ```
 
-**Notas sobre la gramática**
-
----
 
 ## 7. Semántica
 
