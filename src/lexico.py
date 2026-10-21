@@ -208,6 +208,7 @@ class AnalizadorLexico:
         self.pos = 0
         self.linea = 1
         self.tabla_simbolos.clear()
+        
 
     def _read_char(self):
         if self.pos >= len(self.source):
@@ -251,22 +252,23 @@ class AnalizadorLexico:
         
         self.buffer = ""
         self.longitud_id = 0
-        
+        char = self._read_char()
         # Iteramos mientras el estado no sea el estado final[cite: 1]
         while estado != estado_final:
-            col = self._get_columna(self.c)
+            
+            col = self._get_columna(char)
             
             if self.c == '\n':
                 self.linea += 1
             
             # (*proceso [estado][columna]) ()[cite: 1]
             accion = MATRIZ_ACCIONES[estado][col]
-            resultado_parcial = accion(self.c, self)
+            resultado_parcial = accion(char, self)
             if resultado_parcial is not None:
                 resultado_accion = resultado_parcial
                 
             # Validamos si corresponde retroceder antes de buscar el token (unget c)
-            if MATRIZ_UNREADS[estado][col] == 1 and self.c != "EOF":
+            if MATRIZ_UNREADS[estado][col] == 1 and char != "EOF":
                 self._unread_char()
             
             # Consultamos la tabla para ver si el token se terminó
@@ -275,7 +277,7 @@ class AnalizadorLexico:
             # estado = nuevo_estado [estado][columna][cite: 1]
             nuevo_estado = MATRIZ_ESTADOS[estado][col]
             if callable(nuevo_estado):
-                nuevo_estado(self.c, self) 
+                nuevo_estado(char, self) 
             else:
                 estado = nuevo_estado
             
@@ -285,7 +287,7 @@ class AnalizadorLexico:
                 estado = estado_final
             else:
                 # leer (c) : Si el token no terminó, cargamos el siguiente carácter en el loop interior[cite: 1]
-                self.c = self._read_char() 
+                char = self._read_char() 
 
         # --- Fin del ciclo interno, retornamos tipotoken[cite: 1] ---
         
@@ -312,38 +314,27 @@ class AnalizadorLexico:
 
 if __name__ == "__main__":
     lexer = AnalizadorLexico()
-
+    
     codigo_prueba = """
-    function main() { 
+    function mifunc() { 
         int a;
         a = 10;
         if (a > 0) {
-            int a;
-            a = 99;
             print("Variable interna: ", a);
         }
-        print("Variable externa: ", a);
-        return 0;
     }
     """
-    lexer.input(codigo_prueba)
     
+    lexer.input(codigo_prueba)
     print("=== INICIANDO ANÁLISIS LÉXICO ===")
     
-    # get (c) inicial antes de entrar al bucle principal
-    lexer.c = lexer._read_char()
-    
-    # while (feof(inputFile) == 0)
-    while lexer.c != "EOF":
-        tok = lexer.token() # llamada al AL
-        
-        if tok:
-            print(tok)
+    while True:
+        tok = lexer.token() 
+        if not tok:
+            print("FIN DE ARCHIVO (EOF)")
+            break
+        print(tok)
             
-        # get(c) para la siguiente iteración
-        lexer.c = lexer._read_char()
-
-    print("FIN DE ARCHIVO (EOF)")
     print("\n=== TABLA DE SÍMBOLOS GENERADA ===")
     for key, val in lexer.tabla_simbolos.items():
         print(f"{key}: {val}")

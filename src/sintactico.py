@@ -135,5 +135,61 @@ def p_lista_parametros(p):
     pass
 
 
+def p_error(p):
+    if p:
+        print(f"Error de sintaxis en el token '{p.value}' (Tipo: {p.type}) en la línea {p.lineno}")
+    else:
+        print("Error de sintaxis: Fin de archivo inesperado")
+
+# Bloque de prueba
+if __name__ == '__main__':
+    parser = yacc.yacc()
+    lexer_instancia = AnalizadorLexico() 
+    codigo_prueba = """
+        function main() {
+        int x, y;
+        x = 10;
+        y = 0;
+
+        print("Valor de x en main:", x);
+
+        while (y < 3) {
+        y = y + 1;
+        print("Iteracion numero:", y);
+        }
+
+        if (x > 0) {
+        int x;      
+        x = 99;
+
+        print("Valor de x en el if", x);
+        }
+
+        print("Valor de x en main:", x);
+
+        return 0;
+        }
+        
+        function sumarTres(int a, int b, int c) {
+        int resultado;
+         resultado = a + b + c;
+        return resultado;
+        }
+        
+    """
+    #codigo_prueba = """"
+    #function calcularPromedio(int a, int b, int c, int d) {
+    #int suma;
+    #suma = a + b + c + d;
+    #return suma / 4;
+    #}"""
+    
+    print("=== INICIANDO PARSER ===")
+    parser.parse(codigo_prueba, lexer=lexer_instancia)
+    print("Análisis finalizado.")
+    print("\n=== TABLA DE SÍMBOLOS ===")
+    for clave, valor in lexer_instancia.tabla_simbolos.items():
+        print(f"{clave}: {valor}")
+
 
 
