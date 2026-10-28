@@ -83,7 +83,7 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 | 281 | `PARENTESIS_D` | `)` |
 | 282 | `LLAVE_I` | `{` |
 | 283 | `LLAVE_D` | `}` |
-| 284 | `PUNTO` | `;` |
+| 284 | `PUNTO_COMA` | `;` |
 | 285 | `COMA` | `,` |
 
 
@@ -93,7 +93,7 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 
 La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main` es la funcion que se ejecuta al inicio del programa.
 
-- Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), y un bloque de código delimitado por llaves `{` `}` y retornan un valor entero.
+- Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), un bloque de código delimitado por llaves `{` `}` y retornan un valor entero.
 - 
 
 ---
