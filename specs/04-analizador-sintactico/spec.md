@@ -86,5 +86,5 @@ Se debe generar archivos con nombre `test[correcto/incorrecto][numero].py` (Ejem
 * **Integración transparente:** Se conecta con `AnalizadorLexico` consumiendo tokens mediante `token()` sin modificar las matrices ni el ciclo de lectura de `lexico.py`.
 * **Reconocimiento de programas válidos:** Analiza y acepta sin errores sintácticos los 3 programas de prueba correctos (incluyendo estructuras `if/else` y `while` anidadas, funciones con 0 a 3 parámetros, variables usadas antes de declararse y *shadowing* en bloques internos).
 * **Detección y recuperación de errores:** Ante los 3 programas de prueba incorrectos, el analizador reporta la línea exacta y el token inesperado mediante `p_error`, se recupera en el delimitador (`;` o `}`) sin abortar la ejecución y continúa analizando el resto del archivo.
-* **Evidencia del proceso de parsing:** Al ejecutar el analizador con `debug=True` y `logging`, se genera correctamente la traza del autómata LALR evidenciando la lectura de tokens y las acciones de *shift* y *reduce*.
+* **Evidencia del proceso de parsing:** Al ejecutar el analizador con `debug=True` y `logging`, se genera correctamente la traza del autómata evidenciando la lectura de tokens y las acciones de *shift* y *reduce*.
 
