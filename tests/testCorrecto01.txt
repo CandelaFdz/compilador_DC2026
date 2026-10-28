@@ -1,0 +1,29 @@
+function main() {
+    int x, y;
+    x = 10;
+    y = 0;
+
+    print("Valor de x en main:", x);
+
+    while (y < 3) {
+        y = y + 1;
+        print("Iteracion numero:", y);
+    }
+
+    if (x > 0) {
+        int x;
+        x = 99;
+
+        print("Valor de x en el if", x);
+    }
+
+    print("Valor de x en main:", x);
+
+    return 0;
+}
+
+function sumarTres(int a, int b, int c) {
+    int resultado;
+    resultado = a + b + c;
+    return resultado;
+}

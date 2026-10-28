@@ -1,0 +1,12 @@
+function calcularPromedio(int a, int b, int c, int d) {
+    int suma;
+    suma = a + b + c + d;
+    return suma / 4;
+}
+
+function main() {
+    int x;
+    x = 10;
+    print("Continua analizando main:", x);
+    return 0;
+}

@@ -216,11 +216,17 @@ class AnalizadorLexico:
             return "EOF"
         char = self.source[self.pos]
         self.pos += 1
+
+        if char == '\n':
+            self.linea += 1
+    
         return char
 
     def _unread_char(self):
         if self.pos > 0:
             self.pos -= 1
+        if self.source[self.pos] == '\n': #evitar que la linea se sume si se le hace unread a un blanco
+                self.linea -= 1
 
     def _get_columna(self, char):
         if char == "EOF": return 18
@@ -258,8 +264,7 @@ class AnalizadorLexico:
             
             col = self._get_columna(char)
             
-            if self.c == '\n':
-                self.linea += 1
+            
             
             # (*proceso [estado][columna]) ()[cite: 1]
             accion = MATRIZ_ACCIONES[estado][col]

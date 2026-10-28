@@ -1,0 +1,11 @@
+function main() {
+    int a, b;
+    a 10;
+    b = 20 + ;
+
+    if (a < b) {
+        print("Se recupero y analiza el if:", b);
+    }
+
+    return 0;
+}

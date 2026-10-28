@@ -1,0 +1,18 @@
+function duplicar(int valor) {
+    res = valor * 2;
+    int res;
+    return res;
+}
+
+function main() {
+    total = duplicar(5);
+    int total;
+
+    if (total >= 10) {
+        print("Total mayor o igual a diez:", total);
+    } else {
+        print("Total menor a diez:", total);
+    }
+
+    return 0;
+}

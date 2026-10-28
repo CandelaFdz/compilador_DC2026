@@ -1,0 +1,236 @@
+PLY: PARSE DEBUG START
+
+State  : 0
+Stack  : . LexToken(FUNC, 'FUNC', 1, 8)
+Action : Shift and goto state 4
+
+State  : 4
+Stack  : FUNC . LexToken(MAIN, 'MAIN', 1, 13)
+Action : Shift and goto state 7
+
+State  : 7
+Stack  : FUNC MAIN . LexToken(PARENTESIS_I, 'PARENTESIS_I', 1, 14)
+Action : Shift and goto state 9
+
+State  : 9
+Stack  : FUNC MAIN PARENTESIS_I . LexToken(PARENTESIS_D, 'PARENTESIS_D', 1, 15)
+Action : Shift and goto state 14
+
+State  : 14
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D . LexToken(LLAVE_I, 'LLAVE_I', 1, 17)
+Action : Shift and goto state 17
+
+State  : 17
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I . LexToken(INT, 'INT', 2, 25)
+Action : Shift and goto state 33
+
+State  : 33
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I INT . LexToken(ID, 'ID', 2, 27)
+Action : Shift and goto state 46
+
+State  : 46
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I INT ID . LexToken(PUNTO_COMA, 'PUNTO_COMA', 2, 28)
+Action : Reduce rule [lista_ids -> ID] with ['ID'] and goto state 45
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 45
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I INT lista_ids . LexToken(PUNTO_COMA, 'PUNTO_COMA', 2, 28)
+Action : Shift and goto state 63
+
+State  : 63
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I INT lista_ids PUNTO_COMA . LexToken(ID, 'ID', 3, 34)
+Action : Reduce rule [declaracion -> INT lista_ids PUNTO_COMA] with ['INT',None,'PUNTO_COMA'] and goto state 25
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 25
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I declaracion . LexToken(ID, 'ID', 3, 34)
+Action : Reduce rule [sentencia -> declaracion] with [None] and goto state 24
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 24
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencia . LexToken(ID, 'ID', 3, 34)
+Action : Reduce rule [sentencias -> sentencia] with [None] and goto state 22
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 22
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias . LexToken(ID, 'ID', 3, 34)
+Action : Shift and goto state 34
+
+State  : 34
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID . LexToken(ASIG, 'ASIG', 3, 36)
+Action : Shift and goto state 47
+
+State  : 47
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG . LexToken(CTE_ENTERA, '5', 3, 38)
+Action : Shift and goto state 59
+
+State  : 59
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG CTE_ENTERA . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [factor -> CTE_ENTERA] with ['5'] and goto state 57
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 57
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG factor . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [termino -> factor] with [None] and goto state 56
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 56
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG termino . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [expresion_aritmetica -> termino] with [None] and goto state 55
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 55
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG expresion_aritmetica . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [expresion_relacional -> expresion_aritmetica] with [None] and goto state 54
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 54
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG expresion_relacional . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [factor_log -> expresion_relacional] with [None] and goto state 53
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 53
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG factor_log . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [term_log -> factor_log] with [None] and goto state 52
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 52
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG term_log . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Reduce rule [expresion_log -> term_log] with [None] and goto state 65
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 65
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG expresion_log . LexToken(PUNTO_COMA, 'PUNTO_COMA', 3, 39)
+Action : Shift and goto state 88
+
+State  : 88
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias ID ASIG expresion_log PUNTO_COMA . LexToken(WHILE, 'WHILE', 5, 50)
+Action : Reduce rule [asignacion -> ID ASIG expresion_log PUNTO_COMA] with ['ID','ASIG',None,'PUNTO_COMA'] and goto state 26
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 26
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias asignacion . LexToken(WHILE, 'WHILE', 5, 50)
+Action : Reduce rule [sentencia -> asignacion] with [None] and goto state 42
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 42
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias sentencia . LexToken(WHILE, 'WHILE', 5, 50)
+Action : Reduce rule [sentencias -> sentencias sentencia] with [None,None] and goto state 22
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 22
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias . LexToken(WHILE, 'WHILE', 5, 50)
+Action : Shift and goto state 36
+
+State  : 36
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias WHILE . LexToken(ID, 'ID', 5, 52)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias WHILE . LexToken(ID, 'ID', 5, 52)
+
+State  : 36
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias WHILE . error
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias WHILE . error
+
+State  : 22
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias . error
+Action : Shift and goto state 32
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ID, 'ID', 5, 52)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ID, 'ID', 5, 52)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(MENOR, 'MENOR', 5, 54)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(MENOR, 'MENOR', 5, 54)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(CTE_ENTERA, '10', 5, 57)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(CTE_ENTERA, '10', 5, 57)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(PARENTESIS_D, 'PARENTESIS_D', 5, 58)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(PARENTESIS_D, 'PARENTESIS_D', 5, 58)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(LLAVE_I, 'LLAVE_I', 5, 60)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(LLAVE_I, 'LLAVE_I', 5, 60)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ID, 'ID', 6, 70)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ID, 'ID', 6, 70)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ASIG, 'ASIG', 6, 72)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ASIG, 'ASIG', 6, 72)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ID, 'ID', 6, 74)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(ID, 'ID', 6, 74)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(SUMA, 'SUMA', 6, 76)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(SUMA, 'SUMA', 6, 76)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(CTE_ENTERA, '1', 6, 78)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(CTE_ENTERA, '1', 6, 78)
+
+State  : 32
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error . LexToken(PUNTO_COMA, 'PUNTO_COMA', 6, 79)
+Action : Shift and goto state 43
+
+State  : 43
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias error PUNTO_COMA . LexToken(LLAVE_D, 'LLAVE_D', 7, 85)
+Action : Reduce rule [sentencia -> error PUNTO_COMA] with [<LexToken @ 0x104d8713070>,'PUNTO_COMA'] and goto state 42
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 42
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias sentencia . LexToken(LLAVE_D, 'LLAVE_D', 7, 85)
+Action : Reduce rule [sentencias -> sentencias sentencia] with [None,None] and goto state 22
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 22
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias . LexToken(LLAVE_D, 'LLAVE_D', 7, 85)
+Action : Shift and goto state 41
+
+State  : 41
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D LLAVE_I sentencias LLAVE_D . LexToken(ID, 'ID', 9, 92)
+Action : Reduce rule [bloque -> LLAVE_I sentencias LLAVE_D] with ['LLAVE_I',None,'LLAVE_D'] and goto state 20
+Result : <NoneType @ 0x7ffe9c1a2b40> (None)
+
+State  : 20
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D bloque . LexToken(ID, 'ID', 9, 92)
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D bloque . LexToken(ID, 'ID', 9, 92)
+
+State  : 20
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D bloque . error
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D bloque . error
+
+State  : 14
+Stack  : FUNC MAIN PARENTESIS_I PARENTESIS_D . error
+Error  : FUNC MAIN PARENTESIS_I PARENTESIS_D . error
+
+State  : 9
+Stack  : FUNC MAIN PARENTESIS_I . error
+Error  : FUNC MAIN PARENTESIS_I . error
+
+State  : 7
+Stack  : FUNC MAIN . error
+Error  : FUNC MAIN . error
+
+State  : 4
+Stack  : FUNC . error
+Error  : FUNC . error
+
+State  : 0
+Stack  : . error
+Error  : . error
+
+State  : 0
+Stack  : . LexToken(ASIG, 'ASIG', 9, 94)
+Error  : . LexToken(ASIG, 'ASIG', 9, 94)
+
+State  : 0
+Stack  : . LexToken(ID, 'ID', 9, 96)
+Error  : . LexToken(ID, 'ID', 9, 96)
+
+State  : 0

@@ -56,7 +56,7 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 | Código | Token | Lexema |
 |---|---|---|
 | 256 | `ID` | `Identificador` | 
-| 257 | `CTE` | `entero` | 
+| 257 | `CTE_ENTERA` | `entero` | 
 | 258 | `INT` | `int` |
 | 259 | `CADENA` | `literal de texto` | 
 | 260 | `MAIN` | `main` |
@@ -143,7 +143,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <termino> ::= <termino> '*' <factor> | <termino> '/' <factor> | <factor>
 
-<factor> ::= ID | CTE | '(' <expresion_log> ')' | <llamada_funcional>
+<factor> ::= ID | CTE_ENTERA | '(' <expresion_log> ')' | <llamada_funcional>
 
 <llamada_funcional> ::= ID '(' <lista_parametros> ')' | ID '(' ')'
 

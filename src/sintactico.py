@@ -1,5 +1,7 @@
 import ply.yacc as yacc
 import sys
+import os
+import logging
 from lexico import AnalizadorLexico, NOMBRES_TOKENS
 
 # PLY exige la lista de tokens extraída del lexer
@@ -20,6 +22,10 @@ def p_funcion(p):
                | FUNC ID PARENTESIS_I PARENTESIS_D bloque
                | FUNC MAIN PARENTESIS_I PARENTESIS_D bloque'''
     pass
+
+def p_funcion_error(p):
+    '''funcion : FUNC ID PARENTESIS_I error PARENTESIS_D bloque'''
+    parser.errok()
 
 def p_lista_pfunc(p):
     '''lista_pfunc : INT ID COMA INT ID COMA INT ID
@@ -46,6 +52,11 @@ def p_sentencia(p):
                  | retorno
                  | bloque'''
     pass
+
+def p_sentencia_error(p):
+    '''sentencia : error PUNTO_COMA
+                 | error LLAVE_D'''
+    parser.errok()
 
 def p_declaracion(p):
     '''declaracion : INT lista_ids PUNTO_COMA'''
@@ -143,53 +154,32 @@ def p_error(p):
 
 # Bloque de prueba
 if __name__ == '__main__':
-    parser = yacc.yacc()
-    lexer_instancia = AnalizadorLexico() 
-    codigo_prueba = """
-        function main() {
-        int x, y;
-        x = 10;
-        y = 0;
+    # Configuración de logging para evidenciar el proceso de parsing (shift/reduce)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        handlers=[
+            logging.FileHandler("parser_debug.log", mode="w", encoding="utf-8"),
+            logging.StreamHandler(sys.stdout)
+        ],
+        format="%(message)s"
+    )
+    log = logging.getLogger()
 
-        print("Valor de x en main:", x);
+    parser = yacc.yacc(debug=True, debuglog=log)
 
-        while (y < 3) {
-        y = y + 1;
-        print("Iteracion numero:", y);
-        }
+   
+    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testIncorrecto03.txt")
 
-        if (x > 0) {
-        int x;      
-        x = 99;
+    with open(ruta_archivo, "r", encoding="utf-8") as archivo:
+        codigo_fuente = archivo.read()
 
-        print("Valor de x en el if", x);
-        }
+    lexer_instancia = AnalizadorLexico()
+    lexer_instancia.input(codigo_fuente)
+    lexer_instancia.c = lexer_instancia._read_char() # Obligatorio por tu arquitectura léxica
 
-        print("Valor de x en main:", x);
-
-        return 0;
-        }
-        
-        function sumarTres(int a, int b, int c) {
-        int resultado;
-         resultado = a + b + c;
-        return resultado;
-        }
-        
-    """
-    #codigo_prueba = """"
-    #function calcularPromedio(int a, int b, int c, int d) {
-    #int suma;
-    #suma = a + b + c + d;
-    #return suma / 4;
-    #}"""
-    
-    print("=== INICIANDO PARSER ===")
-    parser.parse(codigo_prueba, lexer=lexer_instancia)
-    print("Análisis finalizado.")
-    print("\n=== TABLA DE SÍMBOLOS ===")
-    for clave, valor in lexer_instancia.tabla_simbolos.items():
-        print(f"{clave}: {valor}")
+    print(f"\n=== INICIANDO PARSER CON ARCHIVO: {os.path.basename(ruta_archivo)} ===")
+    parser.parse(codigo_fuente, lexer=lexer_instancia, debug=log)
+    print("=== ANÁLISIS SINTÁCTICO FINALIZADO ===")
 
 
 
