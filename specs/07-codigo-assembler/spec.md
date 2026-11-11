@@ -1,6 +1,7 @@
 # Spec — 07-codigo-assembler
 **Grupo:** A · **Lenguaje de implementación:** Python  
-
+**Depende de:** `lista_tercetos` (`tercetos.txt`) y `tabla_simbolos` (`tabla_simbolos.txt`) generados por `sintactico.py`  
+**Produce:** Archivo `salida.asm` listo para ensamblar
 
 ---
 
@@ -20,6 +21,7 @@ Traducir de forma la lista secuencial de Tercetos `[operador, operando1, operand
 ---
 
 ## 3. Traducción de Tercetos a Assembler (Método de la Cátedra)
+
 
 Implementar el uso de registros para operar
 

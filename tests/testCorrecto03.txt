@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 function sumar(int x, int y) {
     int resultado;
     resultado = x + y;
@@ -21,15 +20,3 @@ function main() {
         a = a - 1;
     }
 }
-=======
-int a;
-    
-    function sumar(int x, int y) {
-        return x + y;
-    }
-    
-    function main() {
-        a = sumar(10, 5);
-        return 0;
-    }
->>>>>>> 8f72ed4167f65ad0d8e4a8e1f69bd990fb425938
