@@ -1,7 +1,6 @@
 # Spec — 07-codigo-assembler
 **Grupo:** A · **Lenguaje de implementación:** Python  
-**Depende de:** `lista_tercetos` (`tercetos.txt`) y `tabla_simbolos` (`tabla_simbolos.txt`) generados por `sintactico.py`  
-**Produce:** Archivo `salida.asm` listo para ensamblar
+
 
 ---
 
