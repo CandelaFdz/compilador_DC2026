@@ -56,7 +56,7 @@ Cada accion semantica para cada regla
     **Al terminar de reducir la regla `OR` completa:**
         1. Sacar los dos últimos elementos de la pila simbólica (`op2` y `op1`).
         2. Generar el terceto lógico `['OR', op1, op2]` y apilar su referencia (ej. `"t24"`) en la pila simbólica.
-        3. Desapilar el índice guardado en la pila de saltos (el `BV` incompleto) y completar su destino con el número del próximo terceto a generar (`len(lista_tercetos) + 1`).
+        3. Desapilar el índice guardado en la pila de saltos (el `BV` incompleto) y completar su destino con el número del próximo terceto a generar.
 -   **Para el operador `AND`:**
     *   **Se tiene que saber si ya es falso:** Si el primer operando de un `AND` resulta falso (`0`), el resto de la condición tampoco debe evaluarse.
     *   Se debe generar un terceto de Bifurcación si Falso (`BF`) incompleto: `['BF', condicion, '--']`.
@@ -64,7 +64,7 @@ Cada accion semantica para cada regla
 -   **Al terminar de reducir la regla `AND` completa:**
         1. Sacar los dos últimos elementos de la pila simbólica (`op2` y `op1`).
         2. Generar el terceto lógico `['AND', op1, op2]` y apilar su referencia (ej. `"t24"`) en la pila simbólica.
-        3. Desapilar el índice guardado en la pila de saltos (el `BF` incompleto) y completar su destino con el número del próximo terceto a generar (`len(lista_tercetos) + 1`).
+        3. Desapilar el índice guardado en la pila de saltos (el `BF` incompleto) y completar su destino con el número del próximo terceto a generar.
 
 ### 3.5 Sentencias de Salida y Retorno (PRINT / RET)
 -   **Regla `PRINT`:** `<salida> ::= PRINT '(' CADENA ',' <expresion_log> ')' ';'`
@@ -93,10 +93,8 @@ Cada accion semantica para cada regla
 Las funciones deben generar tercetos para su punto de inicio, envío de parámetros, y llamado a ejecución.
 *   **Inicio de funcion(`<funcion>`):** Para comenzar una funcion se define una etiqueta de inicio para que se pueda saltar a ella.
     *   **Acción:** Generar `['FUNC', nombre_funcion, '--']`.
-
 *   **Paso de Parámetros (`<lista_parametros>` en llamada):** Cada parámetro enviado en una llamada a función debe generar un terceto individual que lo prepare para la ejecución.
     *   **Acción:** Desapilar el resultado de la expresión del parámetro y generar `['PARAM', resultado_parametro, '--']`.
-
 *   **Llamado a Función (`<llamada_funcional>`):** Tras preparar todos los parámetros, se debe generar la instrucción que salta a la ejecución de la función.
     *   **Acción:** Generar `['CALL', nombre_funcion, cantidad_parametros]`. El resultado de la función (si devuelve un valor) se asocia al identificador del terceto recién creado `p[0] = f"T{len(lista_tercetos)}"`.
 

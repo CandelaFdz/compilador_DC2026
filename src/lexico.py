@@ -304,7 +304,7 @@ class AnalizadorLexico:
             
         tipo = NOMBRES_TOKENS.get(token_code, str(token_code))
         
-        if token_code in [256, 257, 259]: 
+        if tipo in ["ID", "CTE_ENTERA", "CADENA"]: 
             valor = self.buffer
         else:
             valor = tipo

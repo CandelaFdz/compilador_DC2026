@@ -4,32 +4,91 @@ import os
 import logging
 from lexico import AnalizadorLexico, NOMBRES_TOKENS
 
-# PLY exige la lista de tokens extraída del lexer
 tokens = list(set(NOMBRES_TOKENS.values()))
 
 # ==========================================
-# ESTRUCTURAS PARA CÓDIGO INTERMEDIO (TERCETOS)
+# ESTRUCTURAS DE CÓDIGO INTERMEDIO
 # ==========================================
-lista_tercetos = []   # Lista de Tercetos
-pila_operandos = []   # Pila Simbólica (Pila de Operandos)
-pila_saltos = []      # Pila (Pila de Saltos)
+lista_tercetos = []
+pila_operandos = []
+pila_saltos = []
 
 def generar_terceto(op, op1, op2):
-    """Crea un terceto [operador, operando1, operando2], lo añade a la lista y retorna su número (1-based)"""
     lista_tercetos.append([op, op1, op2])
     return len(lista_tercetos)
 
-def exportar_tercetos(ruta_archivo="tercetos.txt"):
-    """Imprime en consola y genera el archivo tercetos.txt con el formato: 22 (>, a, 0)"""
-    print("\n=== TERCETOS GENERADOS ===")
-    with open(ruta_archivo, "w", encoding="utf-8") as f:
+def exportar_tercetos(ruta="tercetos.txt"):
+    with open(ruta, "w", encoding="utf-8") as f:
         for i, t in enumerate(lista_tercetos):
-            linea = f"{i+1} ({t[0]}, {t[1]}, {t[2]})"
-            print(linea)
-            f.write(linea + "\n")
+            f.write(f"{i+1} ({t[0]}, {t[1]}, {t[2]})\n")
 
 # ==========================================
-# DEFINICIÓN DE LA GRAMÁTICA Y ACCIONES
+# ESTRUCTURAS DE TABLA DE SÍMBOLOS
+# ==========================================
+tabla_simbolos_final = {}
+pila_alcances = ["global"]
+contador_bloques = 0
+
+def abrir_ambito(prefijo):
+    global contador_bloques
+    contador_bloques += 1
+    nuevo_ambito = f"{prefijo}_b{contador_bloques}"
+    pila_alcances.append(nuevo_ambito)
+
+def cerrar_ambito():
+    if len(pila_alcances) > 1:
+        pila_alcances.pop()
+
+def declarar_variable_ts(nombre_var):
+    ambito_actual = pila_alcances[-1]
+    clave = f"{nombre_var}@{ambito_actual}"
+    
+    if clave in tabla_simbolos_final:
+        # Si ya existe, comprobamos si fue por uso anticipado
+        if not tabla_simbolos_final[clave]["declarada"]:
+            tabla_simbolos_final[clave]["declarada"] = True
+        else:
+            print(f"Error semántico: Variable '{nombre_var}' ya declarada en este ámbito.")
+    else:
+        tabla_simbolos_final[clave] = {
+            "nombre": nombre_var,
+            "tipo": "INT",
+            "alcance": ambito_actual,
+            "declarada": True
+        }
+
+def usar_variable_ts(nombre_var):
+    # Buscar desde el ámbito más interno al más externo (Shadowing)
+    for ambito in reversed(pila_alcances):
+        clave = f"{nombre_var}@{ambito}"
+        if clave in tabla_simbolos_final:
+            return clave
+            
+    # Uso anticipado (Lazy declaration)
+    ambito_actual = pila_alcances[-1]
+    clave_nueva = f"{nombre_var}@{ambito_actual}"
+    tabla_simbolos_final[clave_nueva] = {
+        "nombre": nombre_var,
+        "tipo": "INT",
+        "alcance": ambito_actual,
+        "declarada": False
+    }
+    return clave_nueva
+
+def verificar_variables_no_declaradas():
+    for clave, datos in tabla_simbolos_final.items():
+        if not datos["declarada"]:
+            print(f"Error semántico: Variable '{datos['nombre']}' usada pero nunca declarada en el ámbito {datos['alcance']}.")
+
+def exportar_tabla_simbolos(ruta="tabla_simbolos.txt"):
+    with open(ruta, "w", encoding="utf-8") as f:
+        f.write("NOMBRE\tTIPO\tALCANCE\tDECLARADA\n")
+        f.write("-" * 40 + "\n")
+        for datos in tabla_simbolos_final.values():
+            f.write(f"{datos['nombre']}\t{datos['tipo']}\t{datos['alcance']}\t{datos['declarada']}\n")
+
+# ==========================================
+# REGLAS SINTÁCTICAS Y SEMÁNTICAS
 # ==========================================
 
 def p_programa(p):
@@ -41,7 +100,6 @@ def p_lista_funciones(p):
                        | funcion'''
     pass
 
-# 3.7 Declaración de Funciones
 def p_funcion(p):
     '''funcion : FUNC ID PARENTESIS_I lista_pfunc PARENTESIS_D m_func bloque
                | FUNC ID PARENTESIS_I PARENTESIS_D m_func bloque
@@ -50,27 +108,18 @@ def p_funcion(p):
 
 def p_m_func(p):
     '''m_func :'''
-    # Inicio de función: Generar ['FUNC', nombre_funcion, '--']
-    nombre = p[-3] if p[-2] == '(' or p[-2] == 'PARENTESIS_I' else p[-4]
-    if p[-3] in ('(', 'PARENTESIS_I'):
-        nombre = p[-4]
-    else:
-        nombre = p[-3]
+    nombre = p[-4] if p[-3] in ('(', 'PARENTESIS_I') else p[-3]
     generar_terceto('FUNC', nombre, '--')
-
-def p_funcion_error(p):
-    '''funcion : FUNC ID PARENTESIS_I error PARENTESIS_D bloque'''
-    parser.errok()
-
-def p_lista_pfunc(p):
-    '''lista_pfunc : INT ID COMA INT ID COMA INT ID
-                   | INT ID COMA INT ID
-                   | INT ID'''
-    pass
+    abrir_ambito(nombre)
 
 def p_bloque(p):
-    '''bloque : LLAVE_I sentencias LLAVE_D
-              | LLAVE_I LLAVE_D'''
+    '''bloque : LLAVE_I m_abre_bloque sentencias LLAVE_D
+              | LLAVE_I m_abre_bloque LLAVE_D'''
+    cerrar_ambito()
+
+def p_m_abre_bloque(p):
+    '''m_abre_bloque :'''
+    # Evita abrir un sub-ámbito extra si el bloque pertenece inmediatamente a la declaración de función
     pass
 
 def p_sentencias(p):
@@ -91,7 +140,6 @@ def p_sentencia(p):
 def p_sentencia_error(p):
     '''sentencia : error PUNTO_COMA
                  | error LLAVE_D'''
-    # Panic Mode: Descarta tokens hasta encontrar ';' o '}' para recuperarse
     parser.errok()
 
 def p_declaracion(p):
@@ -101,27 +149,27 @@ def p_declaracion(p):
 def p_lista_ids(p):
     '''lista_ids : lista_ids COMA ID
                  | ID'''
-    pass
+    declarar_variable_ts(p[len(p)-1])
 
-# 3.2 Asignaciones
 def p_asignacion(p):
     '''asignacion : ID ASIG expresion_log PUNTO_COMA'''
+    clave_var = usar_variable_ts(p[1])
     op_resultado = pila_operandos.pop()
-    generar_terceto('=', p[1], op_resultado)
+    generar_terceto('=', p[1], op_resultado) 
 
-# 3.6 Estructura If - Else
 def p_seleccion(p):
     '''seleccion : IF PARENTESIS_I expresion_log PARENTESIS_D m_cond_if bloque ELSE m_fin_if bloque
                  | IF PARENTESIS_I expresion_log PARENTESIS_D m_cond_if bloque'''
-    if len(p) == 7:  # IF simple sin else
+    if len(p) == 7:
         idx_bf = pila_saltos.pop()
         lista_tercetos[idx_bf - 1][2] = len(lista_tercetos) + 1
-    else:            # IF con ELSE: completar el BI generado para esquivar el else
+    else:
         idx_bi = pila_saltos.pop()
         lista_tercetos[idx_bi - 1][2] = len(lista_tercetos) + 1
 
 def p_m_cond_if(p):
     '''m_cond_if :'''
+    abrir_ambito("if")
     condicion = pila_operandos.pop()
     idx_bf = generar_terceto('BF', condicion, '--')
     pila_saltos.append(idx_bf)
@@ -132,18 +180,19 @@ def p_m_fin_if(p):
     idx_bf = pila_saltos.pop()
     lista_tercetos[idx_bf - 1][2] = len(lista_tercetos) + 1
     pila_saltos.append(idx_bi)
+    abrir_ambito("else")
 
-# 3.3 Estructura While (consume 2 entradas en la pila de saltos)
 def p_iteracion(p):
     '''iteracion : WHILE m_while PARENTESIS_I expresion_log PARENTESIS_D m_cond_while bloque'''
-    idx_bf = pila_saltos.pop()       # 1° desapilar: dónde está el salto (BF)
-    valor_inicio = pila_saltos.pop() # 2° desapilar: dónde está el comienzo del while
+    idx_bf = pila_saltos.pop()
+    valor_inicio = pila_saltos.pop()
     generar_terceto('BI', '--', valor_inicio)
     lista_tercetos[idx_bf - 1][2] = len(lista_tercetos) + 1
 
 def p_m_while(p):
     '''m_while :'''
     pila_saltos.append(len(lista_tercetos) + 1)
+    abrir_ambito("while")
 
 def p_m_cond_while(p):
     '''m_cond_while :'''
@@ -151,7 +200,6 @@ def p_m_cond_while(p):
     idx_bf = generar_terceto('BF', condicion, '--')
     pila_saltos.append(idx_bf)
 
-# 3.5 Sentencias de Salida (PRINT)
 def p_salida_ambos(p):
     '''salida : PRINT PARENTESIS_I CADENA COMA expresion_log PARENTESIS_D PUNTO_COMA'''
     resultado_expr = pila_operandos.pop()
@@ -166,13 +214,11 @@ def p_salida_expr(p):
     resultado_expr = pila_operandos.pop()
     generar_terceto('PRINT', '--', resultado_expr)
 
-# 3.5 Sentencia de Retorno (RET)
 def p_retorno(p):
     '''retorno : RET expresion_log PUNTO_COMA'''
     resultado_expr = pila_operandos.pop()
     generar_terceto('RET', resultado_expr, '--')
 
-# 3.4 Operadores Lógicos (AND / OR en cortocircuito)
 def p_expresion_log(p):
     '''expresion_log : expresion_log OR m_or term_log
                      | term_log'''
@@ -182,10 +228,9 @@ def p_expresion_log(p):
         idx = generar_terceto('OR', op1, op2)
         ref = f"t{idx}"
         pila_operandos.append(ref)
-        p[0] = ref
-
         idx_salto = pila_saltos.pop()
         lista_tercetos[idx_salto - 1][2] = len(lista_tercetos) + 1
+        p[0] = ref
     else:
         p[0] = p[1]
 
@@ -204,10 +249,9 @@ def p_term_log(p):
         idx = generar_terceto('AND', op1, op2)
         ref = f"t{idx}"
         pila_operandos.append(ref)
-        p[0] = ref
-
         idx_bf = pila_saltos.pop()
         lista_tercetos[idx_bf - 1][2] = len(lista_tercetos) + 1
+        p[0] = ref
     else:
         p[0] = p[1]
 
@@ -221,7 +265,6 @@ def p_factor_log(p):
     '''factor_log : expresion_relacional'''
     p[0] = p[1]
 
-# 3.1 Expresiones Relacionales
 def p_expresion_relacional(p):
     '''expresion_relacional : expresion_aritmetica comparador expresion_aritmetica
                             | expresion_aritmetica'''
@@ -244,7 +287,6 @@ def p_comparador(p):
                   | DISTINTO'''
     p[0] = p[1]
 
-# 3.1 Expresiones Aritméticas
 def p_expresion_aritmetica(p):
     '''expresion_aritmetica : expresion_aritmetica SUMA termino
                             | expresion_aritmetica RESTA termino
@@ -273,10 +315,11 @@ def p_termino(p):
     else:
         p[0] = p[1]
 
-# 3.1 Operandos simples y Reglas intermedias
 def p_factor_id_cte(p):
     '''factor : ID
               | CTE_ENTERA'''
+    if str(p[1]).isalpha(): 
+        usar_variable_ts(p[1])
     pila_operandos.append(p[1])
     p[0] = p[1]
 
@@ -288,7 +331,6 @@ def p_factor_llamada(p):
     '''factor : llamada_funcional'''
     p[0] = p[1]
 
-# 3.7 Llamado de Funciones y Paso de Parámetros
 def p_llamada_funcional(p):
     '''llamada_funcional : ID PARENTESIS_I lista_parametros PARENTESIS_D
                          | ID PARENTESIS_I PARENTESIS_D'''
@@ -321,6 +363,15 @@ def p_lista_parametros(p):
         generar_terceto('PARAM', op1, '--')
         p[0] = 1
 
+def p_lista_pfunc(p):
+    '''lista_pfunc : INT ID COMA INT ID COMA INT ID
+                   | INT ID COMA INT ID
+                   | INT ID'''
+    declarar_variable_ts(p[2])
+    if len(p) > 3: declarar_variable_ts(p[5])
+    if len(p) > 6: declarar_variable_ts(p[8])
+    pass
+
 def p_error(p):
     if p:
         print(f"Error de sintaxis en el token '{p.value}' (Tipo: {p.type}) en la línea {p.lineno}")
@@ -328,22 +379,20 @@ def p_error(p):
         print("Error de sintaxis: Fin de archivo inesperado")
 
 # ==========================================
-# BLOQUE DE PRUEBA
+# BLOQUE PRINCIPAL
 # ==========================================
 if __name__ == '__main__':
     logging.basicConfig(
         level=logging.DEBUG,
-        handlers=[
-            logging.FileHandler("parser_debug.log", mode="w", encoding="utf-8"),
-            logging.StreamHandler(sys.stdout)
-        ],
+        handlers=[logging.FileHandler("parser_debug.log", mode="w", encoding="utf-8"), logging.StreamHandler(sys.stdout)],
         format="%(message)s"
     )
     log = logging.getLogger()
-
     parser = yacc.yacc(debug=True, debuglog=log)
 
-    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testcorrecto03.txt")
+    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testCorrecto01.txt")
+    if not os.path.isfile(ruta_archivo):
+        ruta_archivo = "testCorrecto01.txt"
 
     with open(ruta_archivo, "r", encoding="utf-8") as archivo:
         codigo_fuente = archivo.read()
@@ -354,6 +403,8 @@ if __name__ == '__main__':
 
     print(f"\n=== INICIANDO PARSER CON ARCHIVO: {os.path.basename(ruta_archivo)} ===")
     parser.parse(codigo_fuente, lexer=lexer_instancia, debug=log)
-    print("=== ANÁLISIS SINTÁCTICO FINALIZADO ===")
-
+    verificar_variables_no_declaradas()
+    
+    print("\n=== ANÁLISIS SINTÁCTICO Y SEMÁNTICO FINALIZADO ===")
     exportar_tercetos("tercetos.txt")
+    exportar_tabla_simbolos("tabla_simbolos.txt")
