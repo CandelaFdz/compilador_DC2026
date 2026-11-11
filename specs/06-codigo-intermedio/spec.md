@@ -31,9 +31,6 @@ Cada accion semantica para cada regla
 - **Reglas intermedias(ej. `<termino> ::= <factor>`, `<expresion_aritmetica> ::= <termino>`):** No generan tercetos ni alteran las pilas. 
 **Acción:** Solo suben la referencia en el árbol sintáctico (`p[0] = p[1]`).
 
--
-  - **Acción:** Si es un `ID`, se resuelve primero su ámbito activo mediante `usar_variable_ts(p[1])` obteniendo su clave con alcance (ej. `a@main_b1`) y se apila dicha clave en la pila simbólica (si se desea mantener el nombre plano en `tercetos.txt`, se apila `clave_var` o se registra el alcance). Si es `CTE_ENTERA`, se registra en la Tabla de Símbolos y se apila su valor literal (`p[1]`).
-
 ### 3.1 Expresiones Aritméticas y Relacionales
 *   **Regla:** `<expr> ::= <expr> OP <term>` (Suma, Resta, Multiplicación, División, Comparadores).
 *   **Acción:** Sacar los dos últimos elementos de la pila, Generar el terceto con la operación que le corresponde (convirtiendo el nombre del token léxico a su símbolo). Ejemplo: `3('*', '2', 'b')` y apilar la referencia a este nuevo terceto (ej. `"t3"`).
