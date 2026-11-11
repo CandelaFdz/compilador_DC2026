@@ -1,24 +1,10 @@
-function calcular(int a, int b) {
-    int r;
-    r = (a + b) * 2 - (a / b);
-    return r;
-}
-
-function main() {
-    int i, tope, acum;
-    i = 0;
-    tope = 4;
-    acum = 0;
-
-    while (i < tope and acum != 100) {
-        if (i == 2 or i == 3) {
-            acum = acum + calcular(i, 1);
-        } else {
-            acum = acum + 1;
-        }
-        i = i + 1;
+int a;
+    
+    function sumar(int x, int y) {
+        return x + y;
     }
-
-    print("Acumulado final:", acum);
-    return 0;
-}
+    
+    function main() {
+        a = sumar(10, 5);
+        return 0;
+    }

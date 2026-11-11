@@ -22,7 +22,7 @@ Crear el "sintactico.py" donde se traduzca la gramatica de "./diseno/spec.md" y 
 * **Archivos de Entrada:**
   * `lexico.py`: Contiene la clase `AnalizadorLexico` (el cual expone el método `token()`), la clase `LexToken`, la `tabla_simbolos` y la lista de nombres de tokens.
 * **Archivos de Salida :**
-  * `sintactico.py`: Contendrá el analizador sintáctico, la definición de las reglas gramaticales (prefijo `p_`), la lógica de generación de tercetos y la exportación de la tabla de símbolos.
+  * `sintactico.py`: Contendrá el analizador sintáctico, la definición de las reglas gramaticales (prefijo `p_`), la exportación de la tabla de símbolos y la lógica de generación de tercetos se detallara en la spec de la siguiente etapa (./codigo-intermedio/spec.md).
   * `parser_debug.log`: Archivo generado por el módulo `logging` con la traza shift/reduce de PLY.
   * **Reporte de errores en consola:** Mensajes indicando el token inesperado, tipo y línea exacta (`p.lineno`), o aviso de fin de archivo inesperado (EOF).
 
