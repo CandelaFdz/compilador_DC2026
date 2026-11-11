@@ -13,9 +13,7 @@ Traducir de forma la lista secuencial de Tercetos `[operador, operando1, operand
 * Se debe recorrer la `lista_tercetos` desde el inicio al final, uno a uno.
 * Cada terceto  tiene exactamente 3 elementos `[op, op1, op2]` y cuando un operando sea una referencia a otro terceto (ej. `"t3"`), se  debe usar una variable temporal (ej. `AUX_3`).
 * Se debe identificar previamente a qué números de terceto apuntan los saltos (`BF`, `BV` o `BI`). Al momento de traducir cada uno de estos tercetos de destino, se debe emitir la etiqueta correspondiente encima (ej. `LABEL_5:`)
-* **Estructura del archivo `.asm`:**
-  * Sección para la reserva de memoria donde se declara todas las variables `INT` de la Tabla de Símbolos (como enteros de 32 bits `dd 0`), las `CADENA` (`db "...", 0`), los mensajes de error en ejecución (división por cero) y todas las variables temporales `AUX_i dd 0` generadas por las operaciones.
-  * Seccion dende se escriben las instrucciones correspondientes (detalladas en un siguiente item) y las subrutinas de funciones.
+
 
 ---
 
