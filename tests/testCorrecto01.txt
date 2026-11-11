@@ -1,3 +1,29 @@
+<<<<<<< HEAD
+function main() {
+        int a, b;
+        a = 10;
+        
+        /* 1. Uso antes de declarar (Lazy Declaration) */
+        x = 5;
+        int x; 
+
+        /* 2. IF-ELSE con Shadowing */
+        if (a > x) {
+            int a;       /* Shadowing de 'a' */
+            a = 99;
+            print("Variable local a:", a);
+        } else {
+            b = a + x;
+        }
+
+        /* 3. WHILE para evaluar backpatching de 2 entradas */
+        while (b < 20) {
+            b = b + 1;
+        }
+
+        return 0;
+    }
+=======
 function main() {
     int x, y;
     x = 10;
@@ -27,3 +53,4 @@ function sumarTres(int a, int b, int c) {
     resultado = a + b + c;
     return resultado;
 }
+>>>>>>> 8f72ed4167f65ad0d8e4a8e1f69bd990fb425938

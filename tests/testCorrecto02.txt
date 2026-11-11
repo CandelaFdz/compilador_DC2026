@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+function main() {
+    int x, y;
+    x = 5;
+    y=10;
+    
+    if (x > 0) {
+        x = 10;
+    } else {
+        x = 20;
+    }
+    
+    return 0;
+=======
 function main() {
     int x;
     x = 5;
@@ -9,4 +23,5 @@ function main() {
     }
     
     return 0;
+>>>>>>> 8f72ed4167f65ad0d8e4a8e1f69bd990fb425938
 }

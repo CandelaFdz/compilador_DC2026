@@ -6,90 +6,7 @@ from lexico import AnalizadorLexico, NOMBRES_TOKENS
 
 tokens = list(set(NOMBRES_TOKENS.values()))
 
-# ==========================================
-# ESTRUCTURAS DE CÓDIGO INTERMEDIO
-# ==========================================
-lista_tercetos = []
-pila_operandos = []
-pila_saltos = []
-
-def generar_terceto(op, op1, op2):
-    lista_tercetos.append([op, op1, op2])
-    return len(lista_tercetos)
-
-def exportar_tercetos(ruta="tercetos.txt"):
-    with open(ruta, "w", encoding="utf-8") as f:
-        for i, t in enumerate(lista_tercetos):
-            f.write(f"{i+1} ({t[0]}, {t[1]}, {t[2]})\n")
-
-# ==========================================
-# ESTRUCTURAS DE TABLA DE SÍMBOLOS
-# ==========================================
-tabla_simbolos_final = {}
-pila_alcances = ["global"]
-contador_bloques = 0
-
-def abrir_ambito(prefijo):
-    global contador_bloques
-    contador_bloques += 1
-    nuevo_ambito = f"{prefijo}_b{contador_bloques}"
-    pila_alcances.append(nuevo_ambito)
-
-def cerrar_ambito():
-    if len(pila_alcances) > 1:
-        pila_alcances.pop()
-
-def declarar_variable_ts(nombre_var):
-    ambito_actual = pila_alcances[-1]
-    clave = f"{nombre_var}@{ambito_actual}"
-    
-    if clave in tabla_simbolos_final:
-        # Si ya existe, comprobamos si fue por uso anticipado
-        if not tabla_simbolos_final[clave]["declarada"]:
-            tabla_simbolos_final[clave]["declarada"] = True
-        else:
-            print(f"Error semántico: Variable '{nombre_var}' ya declarada en este ámbito.")
-    else:
-        tabla_simbolos_final[clave] = {
-            "nombre": nombre_var,
-            "tipo": "INT",
-            "alcance": ambito_actual,
-            "declarada": True
-        }
-
-def usar_variable_ts(nombre_var):
-    # Buscar desde el ámbito más interno al más externo (Shadowing)
-    for ambito in reversed(pila_alcances):
-        clave = f"{nombre_var}@{ambito}"
-        if clave in tabla_simbolos_final:
-            return clave
-            
-    # Uso anticipado (Lazy declaration)
-    ambito_actual = pila_alcances[-1]
-    clave_nueva = f"{nombre_var}@{ambito_actual}"
-    tabla_simbolos_final[clave_nueva] = {
-        "nombre": nombre_var,
-        "tipo": "INT",
-        "alcance": ambito_actual,
-        "declarada": False
-    }
-    return clave_nueva
-
-def verificar_variables_no_declaradas():
-    for clave, datos in tabla_simbolos_final.items():
-        if not datos["declarada"]:
-            print(f"Error semántico: Variable '{datos['nombre']}' usada pero nunca declarada en el ámbito {datos['alcance']}.")
-
-def exportar_tabla_simbolos(ruta="tabla_simbolos.txt"):
-    with open(ruta, "w", encoding="utf-8") as f:
-        f.write("NOMBRE\tTIPO\tALCANCE\tDECLARADA\n")
-        f.write("-" * 40 + "\n")
-        for datos in tabla_simbolos_final.values():
-            f.write(f"{datos['nombre']}\t{datos['tipo']}\t{datos['alcance']}\t{datos['declarada']}\n")
-
-# ==========================================
-# REGLAS SINTÁCTICAS Y SEMÁNTICAS
-# ==========================================
+# DEFINICIÓN DE LA GRAMÁTICA (REGLAS BNF)
 
 def p_programa(p):
     '''programa : lista_funciones'''
@@ -153,9 +70,6 @@ def p_lista_ids(p):
 
 def p_asignacion(p):
     '''asignacion : ID ASIG expresion_log PUNTO_COMA'''
-    clave_var = usar_variable_ts(p[1])
-    op_resultado = pila_operandos.pop()
-    generar_terceto('=', p[1], op_resultado) 
 
 def p_seleccion(p):
     '''seleccion : IF PARENTESIS_I expresion_log PARENTESIS_D m_cond_if bloque ELSE m_fin_if bloque
@@ -183,36 +97,13 @@ def p_m_fin_if(p):
     abrir_ambito("else")
 
 def p_iteracion(p):
-    '''iteracion : WHILE m_while PARENTESIS_I expresion_log PARENTESIS_D m_cond_while bloque'''
-    idx_bf = pila_saltos.pop()
-    valor_inicio = pila_saltos.pop()
-    generar_terceto('BI', '--', valor_inicio)
-    lista_tercetos[idx_bf - 1][2] = len(lista_tercetos) + 1
+    '''iteracion : WHILE PARENTESIS_I expresion_log PARENTESIS_D bloque'''
+    pass
 
-def p_m_while(p):
-    '''m_while :'''
-    pila_saltos.append(len(lista_tercetos) + 1)
-    abrir_ambito("while")
-
-def p_m_cond_while(p):
-    '''m_cond_while :'''
-    condicion = pila_operandos.pop()
-    idx_bf = generar_terceto('BF', condicion, '--')
-    pila_saltos.append(idx_bf)
-
-def p_salida_ambos(p):
-    '''salida : PRINT PARENTESIS_I CADENA COMA expresion_log PARENTESIS_D PUNTO_COMA'''
-    resultado_expr = pila_operandos.pop()
-    generar_terceto('PRINT', p[3], resultado_expr)
-
-def p_salida_cadena(p):
-    '''salida : PRINT PARENTESIS_I CADENA PARENTESIS_D PUNTO_COMA'''
-    generar_terceto('PRINT', p[3], '--')
-
-def p_salida_expr(p):
-    '''salida : PRINT PARENTESIS_I expresion_log PARENTESIS_D PUNTO_COMA'''
-    resultado_expr = pila_operandos.pop()
-    generar_terceto('PRINT', '--', resultado_expr)
+def p_salida(p):
+    '''salida : PRINT PARENTESIS_I expresion_log PARENTESIS_D PUNTO_COMA
+              | PRINT PARENTESIS_I CADENA PARENTESIS_D PUNTO_COMA
+              | PRINT PARENTESIS_I CADENA COMA expresion_log PARENTESIS_D PUNTO_COMA'''
 
 def p_retorno(p):
     '''retorno : RET expresion_log PUNTO_COMA'''
@@ -317,19 +208,10 @@ def p_termino(p):
 
 def p_factor_id_cte(p):
     '''factor : ID
-              | CTE_ENTERA'''
-    if str(p[1]).isalpha(): 
-        usar_variable_ts(p[1])
-    pila_operandos.append(p[1])
-    p[0] = p[1]
+              | CTE_ENTERA
+              | PARENTESIS_I expresion_log PARENTESIS_D
+              | llamada_funcional'''
 
-def p_factor_par(p):
-    '''factor : PARENTESIS_I expresion_log PARENTESIS_D'''
-    p[0] = p[2]
-
-def p_factor_llamada(p):
-    '''factor : llamada_funcional'''
-    p[0] = p[1]
 
 def p_llamada_funcional(p):
     '''llamada_funcional : ID PARENTESIS_I lista_parametros PARENTESIS_D
@@ -390,9 +272,8 @@ if __name__ == '__main__':
     log = logging.getLogger()
     parser = yacc.yacc(debug=True, debuglog=log)
 
-    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testCorrecto01.txt")
-    if not os.path.isfile(ruta_archivo):
-        ruta_archivo = "testCorrecto01.txt"
+   
+    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testIncorrecto03.txt")
 
     with open(ruta_archivo, "r", encoding="utf-8") as archivo:
         codigo_fuente = archivo.read()

@@ -1,3 +1,27 @@
+<<<<<<< HEAD
+function sumar(int x, int y) {
+    int resultado;
+    resultado = x + y;
+    return resultado;
+}
+
+function main() {
+    int a, b;
+    a = 10;
+    b = 5 * 2;
+    
+    if (a == b) {
+        print("Son iguales", a);
+        a = sumar(a, b);
+    } else {
+        print("Son distintos");
+    }
+    
+    while (a > 0) {
+        a = a - 1;
+    }
+}
+=======
 int a;
     
     function sumar(int x, int y) {
@@ -8,3 +32,4 @@ int a;
         a = sumar(10, 5);
         return 0;
     }
+>>>>>>> 8f72ed4167f65ad0d8e4a8e1f69bd990fb425938
