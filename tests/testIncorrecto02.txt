@@ -1,11 +1,19 @@
-function main() {
-    int a, b;
-    a 10;
-    b = 20 + ;
+function sumarDos(int x, int y) {
+    int r;
+    r = x + y;
+    return r;
+}
 
-    if (a < b) {
-        print("Continua analizando tras recuperarse en punto y coma");
-    }
+function main() {
+    int res;
+
+    /* Error semantico en linea 11: 'sumarDos' espera 2 parametros pero recibe 1 */
+    res = sumarDos(10);
+
+    /* Error semantico en linea 14: 'funcionInexistente' no existe en la TS */
+    res = funcionInexistente(1, 2);
+
+    noDeclarada = 20;
 
     return 0;
 }

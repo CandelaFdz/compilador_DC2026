@@ -1,7 +1,5 @@
 # Spec — 07-codigo-assembler
-**Grupo:** A · **Lenguaje de implementación:** Python  
-**Depende de:** `lista_tercetos` (`tercetos.txt`) y `tabla_simbolos` (`tabla_simbolos.txt`) generados por `sintactico.py`  
-**Produce:** Archivo `salida.asm` listo para ensamblar
+**Grupo:** A · **Lenguaje de implementación:** Python   
 
 ---
 
@@ -18,7 +16,7 @@ Traducir de forma secuencial la lista de Tercetos `[operador, operando1, operand
 * **Plataforma y Ensamblador:** El archivo destino está diseñado para MASM32 en arquitectura x86 (Windows).
 * **Estructura del archivo `.asm`:**
   * Sección para la reserva de memoria donde se declara todas las variables `INT` de la Tabla de Símbolos (como enteros de 32 bits `dd 0`), las `CADENA` (`db "...", 0`), los mensajes de error en ejecución (división por cero) y todas las variables temporales `AUX_i dd 0` generadas por las operaciones.
-  * Seccion dende se escriben las instrucciones correspondientes (detalladas en un siguiente item) y las subrutinas de funciones, incluyendo librerías de consola de Windows (`msvcrt.lib`) para las salidas.
+  * Seccion dende se escriben las instrucciones correspondientes (detalladas en un siguiente item) y las subrutinas de funciones, incluyendo librerías de consola de Windows para las salidas.
 
 
 ---
