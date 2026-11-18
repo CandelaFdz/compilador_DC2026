@@ -439,11 +439,23 @@ def leer_tabla_simbolos_txt(ruta="tabla_simbolos.txt"):
 
 
 if __name__ == "__main__":
+    import builtins
+    import subprocess
     import sintactico
     import ply.yacc as yacc
     from lexico import AnalizadorLexico
 
-    ruta_fuente = os.path.join(os.path.dirname(__file__), "..", "tests", "testIncorrecto03.txt")
+    # Detector automático: si cualquier print muestra "Error", activa hubo_error
+    hubo_error = False
+    _print_original = builtins.print
+    def _print_detector(*args, **kwargs):
+        global hubo_error
+        if "Error" in " ".join(map(str, args)):
+            hubo_error = True
+        _print_original(*args, **kwargs)
+    builtins.print = _print_detector
+
+    ruta_fuente = os.path.join(os.path.dirname(__file__), "..", "tests", "testcorrecto03.txt")
     if not os.path.isfile(ruta_fuente):
         ruta_fuente = "testCorrecto01.txt"
 
@@ -467,13 +479,12 @@ if __name__ == "__main__":
         tercetos_entrada = leer_tercetos_txt("tercetos.txt")
         ts_entrada = leer_tabla_simbolos_txt("tabla_simbolos.txt")
 
-    generador = GeneradorAssembler(tercetos_entrada, ts_entrada)
-    codigo_asm = generador.exportar_asm("salida.asm")
-    print("=== ARCHIVO salida.asm GENERADO EXITOSAMENTE ===")
-    
+    if not hubo_error:
+        generador = GeneradorAssembler(tercetos_entrada, ts_entrada)
+        codigo_asm = generador.exportar_asm("salida.asm")
+        print("=== ARCHIVO salida.asm GENERADO EXITOSAMENTE ===")
 
-    import subprocess
-    subprocess.run([r"G:\masm32\bin\ml.exe", "/c", "/Zd", "/coff", "salida.asm"])
-    subprocess.run([r"G:\masm32\bin\Link.exe", "/SUBSYSTEM:CONSOLE", "salida.obj"])
-    print("\n=== EJECUTANDO PROGRAMA COMPILADO (salida.exe) ===")
-    subprocess.run(["salida.exe"])
+        subprocess.run([r"G:\masm32\bin\ml.exe", "/c", "/Zd", "/coff", "salida.asm"])
+        subprocess.run([r"G:\masm32\bin\Link.exe", "/SUBSYSTEM:CONSOLE", "salida.obj"])
+        print("\n=== EJECUTANDO PROGRAMA COMPILADO (salida.exe) ===")
+        subprocess.run(["salida.exe"])

@@ -1,3 +1,5 @@
+
+/*shadowing*/
 function main() {
     int x, y;
     x = 10;
@@ -13,7 +15,7 @@ function main() {
     if (x > 0) {
         int x;
         x = 99;
-        print("Valor local de x en el if (Shadowing):", x);
+        print("Valor local de x en el if:", x);
     }
 
     print("Valor de x en main tras salir del if:", x);

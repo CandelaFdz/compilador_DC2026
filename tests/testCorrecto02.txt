@@ -1,23 +1,21 @@
-
-
-function main() {
-    total = duplicar(10);
-    ajuste = -5;
-    int total, ajuste;
-
-    total = total + ajuste;
-
-    if (total >= 15) {
-        print("Total mayor o igual a quince:", total);
-    } else {
-        print("Total menor a quince:", total);
-    }
-
-    return 0;
+function calcularTres(int p1, int p2, int p3) {
+    int cuenta;
+    cuenta = (p1 + p2) * p3;
+    return cuenta;
 }
 
-function duplicar(int valor) {
-    res = valor * 2;
-    int res;
-    return res;
+function main() {
+    int a, b;
+    a = 10;
+    b = -4;
+
+    /* Caso: 'resultado' se usa ANTES de su declaracion 'int' */
+    resultado = calcularTres(a, b, 3) + 10 / 2;
+    int resultado;
+
+    print("=== CASO 1: ARITMETICA Y FUNCION DE 3 PARAMETROS ===");
+    print("Resultado final (esperado 23):", resultado);
+    print(resultado + 7);
+
+    return 0;
 }

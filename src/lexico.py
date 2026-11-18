@@ -48,7 +48,7 @@ def f5(char, lexer):
     # Límite estricto de 32 bits para el Grupo A
     if valor_real > 2147483648:
         print(f"Error Léxico (Línea {lexer.linea}): La constante {valor_real} excede el límite de 32 bits.")
-        sys.exit(1)
+        
         
     if lexer.buffer not in lexer.tabla_simbolos:
         lexer.tabla_simbolos[lexer.buffer] = {"tipo": "CTE_ENTERA", "valor": valor_real, "longitud": None}
@@ -282,7 +282,7 @@ class AnalizadorLexico:
             # estado = nuevo_estado [estado][columna][cite: 1]
             nuevo_estado = MATRIZ_ESTADOS[estado][col]
             if callable(nuevo_estado):
-                nuevo_estado(char, self) 
+                estado = 0
             else:
                 estado = nuevo_estado
             

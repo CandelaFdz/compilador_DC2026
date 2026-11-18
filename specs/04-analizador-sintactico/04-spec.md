@@ -49,7 +49,7 @@ Se debe generar archivos con nombre `test[correcto/incorrecto][numero].py` (Ejem
 - **3 programas fuente correctos** que ejerciten todas las estructuras de control del lenguaje (if, while, asignaciones, llamadas a funciones) y dos de ellos deben incluir los siguientes casos para reutilizar y verificar en la siguiente etapa, aunque en la etapa del analizador sintactico solo se verifique la gramatica:
   1. Un programa que utilice una variable ANTES de ser declarada (ej. `x = 10; int x;`).
   2. Un programa que declare una variable local en un bloque interno con el mismo nombre que una externa, demostrando el ocultamiento correcto (Shadowing)  
-- **3 programas fuente con errores léxicos y sintácticos deliberados**, demostrando que el analizador no aborta en el primer error, sino que aplica el *Panic Mode* y termina de procesar el archivo.
+- **2 programas fuente con errores léxicos y sintácticos deliberados**, demostrando que el analizador no aborta en el primer error, sino que aplica el *Panic Mode* y termina de procesar el archivo.
 
 * Ejemplo de programa funcional:
 

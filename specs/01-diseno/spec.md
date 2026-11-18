@@ -93,8 +93,9 @@ Se reconocen como identificadores (L (L | D)*) y se resuelven por búsqueda en t
 
 La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main` es la funcion que se ejecuta al inicio del programa.
 
-- Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), un bloque de código delimitado por llaves `{` `}` y retornan un valor entero.
-- 
+
+- Cada función declara un nombre, una lista de hasta 3 parámetros por valor (o ninguno), un bloque de código delimitado por llaves `{` `}` y retorna un valor entero mediante `return`.
+- Dentro de cada bloque pueden escribirse declaraciones de variables (`int`), asignaciones, sentencias de salida (`print`), estructuras de control (`if`/`else` y `while`) y nuevos bloques `{` `}` anidados con su propio alcance local.
 
 ---
 
@@ -152,22 +153,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 ```
 
 
-## 7. Semántica
-
-| Regla | Definición |
-|---|---|
-
----
-
-## 8. Responsabilidad de cada error
-
-| Código | Descripción | Fase que lo detecta |
-|---|---|---|
-
-
----
-
-## 9. Programas de ejemplo
+## 7. Programas de ejemplo
 
 ```
 PROGRAMA 1
@@ -223,4 +209,3 @@ Valor de x en el main: 10
 
 ---
 
-## 10. Fuera de alcance

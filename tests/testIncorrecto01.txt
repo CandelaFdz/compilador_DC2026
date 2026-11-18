@@ -1,6 +1,7 @@
 function main() {
     int x, y;
     x = 10;
+    a=; 
 
     /* Error sintactico: llamada con 4 parametros (maximo permitido es 3) */
     y = sumarCuatro(1, 2, 3, 4);

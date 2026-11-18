@@ -425,7 +425,7 @@ def p_termino(p):
 def p_factor_id_cte(p):
     '''factor : ID
               | CTE_ENTERA'''
-    if str(p[1]).isalpha() or '_' in str(p[1]):
+    if p.slice[1].type == "ID":
         simbolo = usar_variable_ts(p[1], p.lineno(1))
     else:
         registrar_constante_ts(str(p[1]), "CTE_ENTERA", int(p[1]), p.lineno(1))
@@ -502,7 +502,7 @@ if __name__ == '__main__':
     log = logging.getLogger()
     parser = yacc.yacc(debug=True, debuglog=log)
 
-    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testIncorrecto03.txt")
+    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testIncorrecto01.txt")
     if not os.path.isfile(ruta_archivo):
         ruta_archivo = "testCorrecto01.txt"
 
