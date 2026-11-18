@@ -18,7 +18,7 @@
 | D7 | Comentarios | De bloque `(/* ... */)`. El léxico los descarta íntegramente |    
 | D8 | Resultado de una comparacion | Valor entero: 0 para falso y -1 para verdadero. Puede asignarse a una variable y operarse aritmeticamente |    
 | D9 | División por cero | Error en ejecucion |    
-| D10 | Plataforma destino | x86-64, MASM sobre windows |
+| D10 | Plataforma destino | MASMx32 sobre windows |
 | D11 | Evaluacion logica | Evaluacion en cortocircuito de and y or |
 | D12 | Sentencia de E/S | sentencia print para mostrar valores numericos y literales de texto entre comillas dobles |
 | D13 | Estructura del programa | Conjunto de funciones. El punto de entrada es una función con el nombre reservado main |
@@ -143,7 +143,7 @@ La unidad de compilacion es un conjunto de una o mas funciones. La funcion `main
 
 <termino> ::= <termino> '*' <factor> | <termino> '/' <factor> | <factor>
 
-<factor> ::= ID | CTE_ENTERA | '(' <expresion_log> ')' | <llamada_funcional>
+<factor> ::= ID | CTE_ENTERA | '-' CTE_ENTERA | '(' <expresion_log> ')' | <llamada_funcional>
 
 <llamada_funcional> ::= ID '(' <lista_parametros> ')' | ID '(' ')'
 

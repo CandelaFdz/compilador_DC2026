@@ -4,7 +4,7 @@ function main() {
     b = 20 + ;
 
     if (a < b) {
-        print("Se recupero y analiza el if:", b);
+        print("Continua analizando tras recuperarse en punto y coma");
     }
 
     return 0;

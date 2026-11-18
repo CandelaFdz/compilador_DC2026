@@ -28,9 +28,10 @@ def f2(char, lexer):
 
 def f3(char, lexer):
     lexer.longitud_id += 1
-    if lexer.longitud_id > 20:
-        print(f"Warning Léxico (Línea {lexer.linea}): Identificador excede 20 caracteres.")
-    lexer.buffer += char
+    if lexer.longitud_id <= 20:
+        lexer.buffer += char
+    elif lexer.longitud_id == 21:
+        print(f"Warning Léxico (Línea {lexer.linea}): Identificador excede 20 caracteres, será truncado.")
 
 def f4(char, lexer):
     # Verifica si el buffer es una palabra reservada o un ID normal
@@ -62,11 +63,10 @@ def fn(char, lexer):
     pass # Transición sin acción
 
 def f_err(char, lexer):
-    if char == "EOF":
-        print(f"Error Léxico (Línea {lexer.linea}): Fin de archivo inesperado.")
-    else:
-        print(f"Error Léxico (Línea {lexer.linea}): Carácter no reconocido '{char}'")
-    sys.exit(1)
+    print(f"Error Léxico (Línea {lexer.linea}): Carácter no reconocido '{char}'")
+    lexer.hubo_error = True
+    lexer.buffer = ""
+    lexer.estado = 0
 
 # --- 1. INICIALIZACIÓN DE MATRICES Y TABLA DE SÍMBOLOS ---
 MATRIZ_ESTADOS = [
@@ -318,28 +318,29 @@ class AnalizadorLexico:
 # ==========================================
 
 if __name__ == "__main__":
+    import os
+
     lexer = AnalizadorLexico()
-    
-    codigo_prueba = """
-    function mifunc() { 
-        int a;
-        a = 10;
-        if (a > 0) {
-            print("Variable interna: ", a);
-        }
-    }
-    """
-    
+
+    ruta_archivo = os.path.join(os.path.dirname(__file__), "..", "tests", "testCorrecto01.txt")
+    if not os.path.isfile(ruta_archivo):
+        ruta_archivo = "testCorrecto01.txt"
+
+    with open(ruta_archivo, "r", encoding="utf-8") as archivo:
+        codigo_prueba = archivo.read()
+
     lexer.input(codigo_prueba)
-    print("=== INICIANDO ANÁLISIS LÉXICO ===")
-    
+    lexer.c = lexer._read_char()
+
+    print(f"=== INICIANDO ANÁLISIS LÉXICO ({os.path.basename(ruta_archivo)}) ===")
+
     while True:
-        tok = lexer.token() 
+        tok = lexer.token()
         if not tok:
             print("FIN DE ARCHIVO (EOF)")
             break
         print(tok)
-            
+
     print("\n=== TABLA DE SÍMBOLOS GENERADA ===")
     for key, val in lexer.tabla_simbolos.items():
         print(f"{key}: {val}")

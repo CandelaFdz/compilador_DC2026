@@ -2,21 +2,23 @@ import os
 import re
 import sys
 
+
 class GeneradorAssembler:
     """
-    Traduce la lista secuencial de Tercetos [op, op1, op2] y la Tabla de Símbolos
-    a código Assembler siguiendo las reglas de spec.md y el método de la cátedra.
+    Traduce secuencialmente la lista de Tercetos [operador, operando1, operando2]
+    y la Tabla de Símbolos a código Assembler ejecutable en MASM32 (Windows x86),
+    cumpliendo estrictamente con 06-spec_2.md.
     """
 
     def __init__(self, lista_tercetos, tabla_simbolos):
         self.lista_tercetos = lista_tercetos
         self.tabla_simbolos = tabla_simbolos
 
-        self.variables_int = []        # Variables INT en formato nombre_alcance
-        self.constantes_cadena = {}    # literal_cadena -> etiqueta_assembler (ej. CADENA_1)
-        self.auxiliares = []           # Variables temporales AUX_i
-        self.destinos_salto = set()    # Números de terceto destino de BF, BV, BI
-        self.parametros_pendientes = [] # Lista temporal para tercetos PARAM
+        self.variables_int = []         # Variables INT en formato nombre_alcance
+        self.constantes_cadena = {}     # literal_cadena -> etiqueta (CADENA_1, ...)
+        self.auxiliares = []            # Variables temporales AUX_i
+        self.destinos_salto = set()     # Números de terceto destino de BF, BI (y BV)
+        self.parametros_pendientes = [] # Cola temporal de operandos de PARAM
         self.funcion_actual = None
 
     # ==========================================
@@ -47,8 +49,8 @@ class GeneradorAssembler:
 
     def _obtener_variables_de_funcion(self, nombre_func):
         """
-        Retorna en orden de declaración las variables de la Tabla de Símbolos
-        cuyo alcance pertenece a la función indicada (ej. 'sumar_b1').
+        Obtiene en orden las variables INT declaradas en el alcance de la función
+        para copiar en ellas los parámetros al ejecutar CALL (Sección 3.6).
         """
         vars_func = []
         prefijo = f"{nombre_func}_b"
@@ -63,31 +65,27 @@ class GeneradorAssembler:
 
     def _resolver_operando(self, op):
         """
-        Cumple las secciones 2 y 4 de la spec:
+        Aplica las Secciones 2 y 4 de 06-spec_2.md:
         - Referencia 't3' -> 'AUX_3'
-        - Constante entera -> valor literal
+        - Constante entera -> literal numérico
         - Variable 'a@main_b1' -> 'a_main_b1'
-        - Variable sin '@alcance' -> busca en la Tabla de Símbolos dentro de la función activa
+        - Variable sin '@alcance' -> busca en la Tabla de Símbolos según la función activa
         """
         op_str = str(op).strip()
 
-        # 1. Referencia a otro terceto (ej. "t3" -> "AUX_3")
         if self._es_referencia_terceto(op_str):
             num = op_str[1:]
             return self._registrar_auxiliar(num)
 
-        # 2. Constante numérica entera
         if self._es_constante_entera(op_str):
             return op_str
 
-        # 3. Identificador con formato nombre@alcance (Shadowing resuelto desde sintactico.py)
         if "@" in op_str:
             var_asm = op_str.replace("@", "_")
             if var_asm not in self.variables_int:
                 self.variables_int.append(var_asm)
             return var_asm
 
-        # 4. Identificador sin '@alcance': buscar coincidencia con la función actual en la TS
         if self.funcion_actual:
             prefijo = f"{self.funcion_actual}_b"
             for clave, datos in self.tabla_simbolos.items():
@@ -99,7 +97,6 @@ class GeneradorAssembler:
                             self.variables_int.append(var_asm)
                         return var_asm
 
-        # Fallback en caso de variable global o no calificada
         for clave, datos in self.tabla_simbolos.items():
             if datos.get("tipo") == "INT" and datos.get("nombre") == op_str:
                 var_asm = f"{op_str}_{datos.get('alcance', 'global')}"
@@ -113,9 +110,9 @@ class GeneradorAssembler:
 
     def _preparar_estructura(self):
         """
-        Recorre previamente la Tabla de Símbolos y la lista_tercetos para:
-        - Declarar todas las variables INT (con alcance concatenado) y CADENA.
-        - Identificar todos los números de terceto destino de BF, BV y BI.
+        Pre-escaneo (Sección 2):
+        - Registra variables INT y constantes CADENA de la Tabla de Símbolos.
+        - Identifica todos los números de terceto a los que apuntan los saltos BF y BI.
         """
         for clave, datos in self.tabla_simbolos.items():
             tipo = datos.get("tipo", "")
@@ -129,9 +126,9 @@ class GeneradorAssembler:
             elif tipo == "CADENA":
                 self._registrar_cadena(nombre)
 
-        for i, terceto in enumerate(self.lista_tercetos, start=1):
+        for terceto in self.lista_tercetos:
             op, op1, op2 = terceto[0], terceto[1], terceto[2]
-            if op in ("BF", "BV", "BI"):
+            if op in ("BF", "BI", "BV"):
                 destino = str(op2).strip()
                 if destino.isdigit():
                     self.destinos_salto.add(int(destino))
@@ -139,31 +136,31 @@ class GeneradorAssembler:
                 self._registrar_cadena(op1)
 
     # ==========================================
-    # 2. TRADUCCIÓN DE TERCETOS A ASSEMBLER
+    # 2. TRADUCCIÓN DE TERCETOS (MÉTODO CÁTEDRA)
     # ==========================================
     def generar_assembler(self):
         self._preparar_estructura()
         instrucciones_code = []
 
-        # Mapeos para soportar tanto nombres de tokens de lexico.py como símbolos de spec.md
         MAPA_ARITMETICO = {
             "+": "ADD", "SUMA": "ADD",
             "-": "SUB", "RESTA": "SUB",
-            "*": "MUL", "MULTIPLICAR": "MUL",
-            "/": "DIV", "DIVISION": "DIV"
+            "*": "IMUL", "MULTIPLICAR": "IMUL",
+            "/": "IDIV", "DIVISION": "IDIV"
         }
 
-        MAPA_COMPARADORES = {
-            "==": "JE",  "IGUAL": "JE",
-            "!=": "JNE", "DISTINTO": "JNE",
-            ">":  "JG",  "MAYOR": "JG",
-            "<":  "JL",  "MENOR": "JL",
-            ">=": "JGE", "MAYOR_E": "JGE",
-            "<=": "JLE", "MENOR_E": "JLE"
+        # Sección 3.3: Salto condicional usando la condición INVERSA al operador original
+        MAPA_COMPARADORES_INVERSO = {
+            ">":  "JLE", "MAYOR":    "JLE",
+            "<":  "JGE", "MENOR":    "JGE",
+            "==": "JNE", "IGUAL":    "JNE",
+            "!=": "JE",  "DISTINTO": "JE",
+            ">=": "JL",  "MAYOR_E":  "JL",
+            "<=": "JG",  "MENOR_E":  "JG"
         }
 
         for i, (op, op1, op2) in enumerate(self.lista_tercetos, start=1):
-            # Emitir etiqueta LABEL_X: si este terceto es destino de algún salto
+            # Emitir etiqueta LABEL_i: si el terceto actual es destino de algún salto
             if i in self.destinos_salto:
                 instrucciones_code.append(f"LABEL_{i}:")
 
@@ -174,55 +171,65 @@ class GeneradorAssembler:
                 instrucciones_code.append(f"    MOV R1, {origen}")
                 instrucciones_code.append(f"    MOV {destino}, R1")
 
-            # 3.2 Expresiones Aritméticas (+, -, *, / o SUMA, RESTA, MULTIPLICAR, DIVISION)
+            # 3.2 Expresiones Aritméticas (+, -, *, /)
             elif op in MAPA_ARITMETICO:
-                operacion_asm = MAPA_ARITMETICO[op]
+                inst_asm = MAPA_ARITMETICO[op]
                 operando1 = self._resolver_operando(op1)
                 operando2 = self._resolver_operando(op2)
                 aux_i = self._registrar_auxiliar(i)
 
-                if operacion_asm in ("ADD", "SUB", "MUL"):
+                if inst_asm in ("ADD", "SUB", "IMUL"):
                     instrucciones_code.append(f"    MOV R1, {operando1}")
-                    instrucciones_code.append(f"    {operacion_asm} R1, {operando2}")
+                    instrucciones_code.append(f"    {inst_asm} R1, {operando2}")
                     instrucciones_code.append(f"    MOV {aux_i}, R1")
-                elif operacion_asm == "DIV":
-                    # División con control de Error por Cero en R2
+                elif inst_asm == "IDIV":
                     instrucciones_code.append(f"    MOV R2, {operando2}")
                     instrucciones_code.append(f"    CMP R2, 0")
                     instrucciones_code.append(f"    JE _error_div_cero")
                     instrucciones_code.append(f"    MOV R1, {operando1}")
-                    instrucciones_code.append(f"    DIV R2")
+                    instrucciones_code.append(f"    CDQ")
+                    instrucciones_code.append(f"    IDIV R2")
                     instrucciones_code.append(f"    MOV {aux_i}, R1")
 
-            # 3.3 Comparadores (<, >, ==, !=, <=, >= o sus tokens equivalentes)
-            elif op in MAPA_COMPARADORES:
-                salto_cond = MAPA_COMPARADORES[op]
+            # 3.3 Comparadores (con condición inversa hacia _fin_cmp_i)
+            elif op in MAPA_COMPARADORES_INVERSO:
+                salto_inverso = MAPA_COMPARADORES_INVERSO[op]
                 operando1 = self._resolver_operando(op1)
                 operando2 = self._resolver_operando(op2)
                 aux_i = self._registrar_auxiliar(i)
-                lbl_verdadero = f"_CMP_VERDADERO_{i}"
-                lbl_fin = f"_CMP_FIN_{i}"
+                lbl_fin_cmp = f"_fin_cmp_{i}"
 
                 instrucciones_code.append(f"    MOV {aux_i}, 0")
                 instrucciones_code.append(f"    MOV R1, {operando1}")
                 instrucciones_code.append(f"    CMP R1, {operando2}")
-                instrucciones_code.append(f"    {salto_cond} {lbl_verdadero}")
-                instrucciones_code.append(f"    JMP {lbl_fin}")
-                instrucciones_code.append(f"{lbl_verdadero}:")
+                instrucciones_code.append(f"    {salto_inverso} {lbl_fin_cmp}")
                 instrucciones_code.append(f"    MOV {aux_i}, -1")
-                instrucciones_code.append(f"{lbl_fin}:")
+                instrucciones_code.append(f"{lbl_fin_cmp}:")
 
             # 3.3 Operadores Lógicos (AND / OR)
+            # 3.3 Operadores Lógicos (AND / OR) con soporte de cortocircuito en bucles
             elif op in ("AND", "OR"):
                 operando1 = self._resolver_operando(op1)
                 operando2 = self._resolver_operando(op2)
                 aux_i = self._registrar_auxiliar(i)
+                lbl_fin_log = f"_fin_log_{i}"
+                sig_terceto = i + 1
 
                 instrucciones_code.append(f"    MOV R1, {operando1}")
                 instrucciones_code.append(f"    {op} R1, {operando2}")
                 instrucciones_code.append(f"    MOV {aux_i}, R1")
 
-            # 3.4 Saltos Condicionales e Incondicionales (BI, BF, BV)
+                # Si el salto de cortocircuito (BF en AND, BI en OR) apunta a LABEL_{i+1},
+                # fijar en esa etiqueta el valor de cortocircuito (0 para AND, -1 para OR)
+                if sig_terceto in self.destinos_salto:
+                    valor_corto = "0" if op == "AND" else "-1"
+                    instrucciones_code.append(f"    JMP {lbl_fin_log}")
+                    instrucciones_code.append(f"LABEL_{sig_terceto}:")
+                    instrucciones_code.append(f"    MOV {aux_i}, {valor_corto}")
+                    instrucciones_code.append(f"{lbl_fin_log}:")
+                    self.destinos_salto.remove(sig_terceto)
+
+            # 3.4 Saltos Condicionales e Incondicionales (BI, BF)
             elif op == "BI":
                 destino = str(op2).strip()
                 instrucciones_code.append(f"    JMP LABEL_{destino}")
@@ -254,7 +261,13 @@ class GeneradorAssembler:
             # 3.6 Funciones (FUNC, PARAM, CALL, RET)
             elif op == "FUNC":
                 if self.funcion_actual is not None:
-                    instrucciones_code.append(f"{self.funcion_actual} ENDP\n")
+                    fin_proc = f"LABEL_{i}:" if i in self.destinos_salto else ""
+                    if fin_proc and instrucciones_code[-1] == fin_proc:
+                        instrucciones_code.pop()
+                        instrucciones_code.append(f"{self.funcion_actual} ENDP\n")
+                        instrucciones_code.append(fin_proc)
+                    else:
+                        instrucciones_code.append(f"{self.funcion_actual} ENDP\n")
                 self.funcion_actual = str(op1).strip()
                 instrucciones_code.append(f"{self.funcion_actual} PROC")
 
@@ -267,7 +280,6 @@ class GeneradorAssembler:
                 cant_params = int(op2) if str(op2).isdigit() else 0
                 vars_funcion = self._obtener_variables_de_funcion(nombre_func)
 
-                # Tomar los parámetros guardados para esta llamada y copiarlos en orden
                 params_actuales = self.parametros_pendientes[:cant_params]
                 self.parametros_pendientes = self.parametros_pendientes[cant_params:]
 
@@ -290,7 +302,7 @@ class GeneradorAssembler:
                 instrucciones_code.append(f"    MOV R1, {valor_retorno}")
                 instrucciones_code.append(f"    RET")
 
-        # Si algún salto apunta al final de la lista de tercetos (len + 1), emitir su etiqueta
+        # Si algún salto apunta al final de los tercetos (len + 1), emitir su etiqueta antes de cerrar el PROC
         fin_tercetos = len(self.lista_tercetos) + 1
         if fin_tercetos in self.destinos_salto:
             instrucciones_code.append(f"LABEL_{fin_tercetos}:")
@@ -298,8 +310,33 @@ class GeneradorAssembler:
         if self.funcion_actual is not None:
             instrucciones_code.append(f"{self.funcion_actual} ENDP")
 
-        # Construir el archivo .asm final con sección .data y sección .code
-        lineas_asm = [".data"]
+        # ==========================================
+        # 3. ARMADO DEL ARCHIVO .ASM PARA MASM32
+        # ==========================================
+        cabecera_masm32 = [
+            ".386",
+            ".model flat, stdcall",
+            "option casemap :none",
+            "include \\masm32\\include\\windows.inc",
+            "include \\masm32\\include\\kernel32.inc",
+            "include \\masm32\\include\\msvcrt.inc",
+            "includelib \\masm32\\lib\\kernel32.lib",
+            "includelib \\masm32\\lib\\msvcrt.lib",
+            "",
+            "PRINT_STR MACRO cadena",
+            "    invoke crt_printf, addr FMT_STR, addr cadena",
+            "ENDM",
+            "",
+            "PRINT_INT MACRO reg_val",
+            "    invoke crt_printf, addr FMT_INT, reg_val",
+            "ENDM",
+            "",
+            ".data",
+            '    FMT_STR db "%s", 13, 10, 0',
+            '    FMT_INT db "%d", 13, 10, 0'
+        ]
+
+        lineas_asm = list(cabecera_masm32)
 
         for var_int in self.variables_int:
             lineas_asm.append(f"    {var_int} dd 0")
@@ -316,12 +353,26 @@ class GeneradorAssembler:
         lineas_asm.append("\n.code")
         lineas_asm.extend(instrucciones_code)
 
-        # Rutina de error de división por cero al pie de la sección de código
-        lineas_asm.append("\n_error_div_cero:")
-        lineas_asm.append("    PRINT_STR MSG_ERR_DIV_CERO")
-        lineas_asm.append("    HLT")
+        # Punto de entrada de Windows que invoca a main y rutina de error por división por cero
+        lineas_asm.extend([
+            "",
+            "start:",
+            "    CALL main",
+            "    invoke ExitProcess, 0",
+            "",
+            "_error_div_cero:",
+            "    PRINT_STR MSG_ERR_DIV_CERO",
+            "    invoke ExitProcess, 1",
+            "END start"
+        ])
 
-        return "\n".join(lineas_asm) + "\n"
+        texto_asm = "\n".join(lineas_asm) + "\n"
+
+        # Sección 3 (Mapeo de Pseudo-Registros a MASM32): reemplazar R1 -> EAX y R2 -> EBX
+        texto_asm = re.sub(r'\bR1\b', 'EAX', texto_asm)
+        texto_asm = re.sub(r'\bR2\b', 'EBX', texto_asm)
+
+        return texto_asm
 
     def exportar_asm(self, ruta="salida.asm"):
         codigo = self.generar_assembler()
@@ -331,10 +382,9 @@ class GeneradorAssembler:
 
 
 # ==========================================
-# FUNCIONES DE LECTURA DESDE ARCHIVOS .TXT
+# LECTURA DESDE ARCHIVOS .TXT
 # ==========================================
 def leer_tercetos_txt(ruta="tercetos.txt"):
-    """Lee tercetos.txt con el formato: 1 (FUNC, main, --)"""
     tercetos = []
     patron = re.compile(r'^\d+\s*\((.+?),\s*(.+?),\s*(.+?)\)$')
     if not os.path.isfile(ruta):
@@ -349,17 +399,15 @@ def leer_tercetos_txt(ruta="tercetos.txt"):
 
 
 def leer_tabla_simbolos_txt(ruta="tabla_simbolos.txt"):
-    """Lee tabla_simbolos.txt en caso de ejecutar assembler.py por separado."""
     tabla = {}
     if not os.path.isfile(ruta):
         return tabla
     with open(ruta, "r", encoding="utf-8") as f:
         lineas = f.readlines()
-    for linea in lineas[2:]:  # Saltar cabecera y guiones
+    for linea in lineas[2:]:
         linea_strip = linea.strip()
         if not linea_strip:
             continue
-        # Soportar cadenas con espacios si llegaran a aparecer en la tabla
         if linea_strip.startswith('"'):
             fin_comilla = linea_strip.find('"', 1)
             if fin_comilla != -1:
@@ -390,17 +438,12 @@ def leer_tabla_simbolos_txt(ruta="tabla_simbolos.txt"):
     return tabla
 
 
-# ==========================================
-# BLOQUE PRINCIPAL
-# ==========================================
 if __name__ == "__main__":
     import sintactico
     import ply.yacc as yacc
     from lexico import AnalizadorLexico
 
-    # Si ya existen tercetos.txt y tabla_simbolos.txt y no se pasa código fuente, los usa;
-    # de lo contrario, ejecuta el análisis sintáctico sobre el archivo de prueba y genera salida.asm.
-    ruta_fuente = os.path.join(os.path.dirname(__file__), "..", "tests", "testCorrecto01.txt")
+    ruta_fuente = os.path.join(os.path.dirname(__file__), "..", "tests", "testIncorrecto03.txt")
     if not os.path.isfile(ruta_fuente):
         ruta_fuente = "testCorrecto01.txt"
 
@@ -427,4 +470,10 @@ if __name__ == "__main__":
     generador = GeneradorAssembler(tercetos_entrada, ts_entrada)
     codigo_asm = generador.exportar_asm("salida.asm")
     print("=== ARCHIVO salida.asm GENERADO EXITOSAMENTE ===")
-    print(codigo_asm)
+    
+
+    import subprocess
+    subprocess.run([r"G:\masm32\bin\ml.exe", "/c", "/Zd", "/coff", "salida.asm"])
+    subprocess.run([r"G:\masm32\bin\Link.exe", "/SUBSYSTEM:CONSOLE", "salida.obj"])
+    print("\n=== EJECUTANDO PROGRAMA COMPILADO (salida.exe) ===")
+    subprocess.run(["salida.exe"])

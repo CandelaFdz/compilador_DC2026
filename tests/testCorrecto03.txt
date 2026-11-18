@@ -1,22 +1,24 @@
-function sumar(int x, int y) {
-    int resultado;
-    resultado = x + y;
-    return resultado;
+function operarTres(int a, int b, int c) {
+    int r;
+    r = (a + b) * c;
+    return r;
 }
 
 function main() {
-    int a, b;
-    a = 10;
-    b = 5 * 2;
-    
-    if (a == b) {
-        print("Son iguales", a);
-        a = sumar(a, b);
-    } else {
-        print("Son distintos");
+    int i, tope, acum;
+    i = 0;
+    tope = 3;
+    acum = 0;
+
+    while (i < tope and acum < 50) {
+        if (i == 1 or i == 2) {
+            acum = acum + operarTres(i, 2, 3);
+        } else {
+            acum = acum + 1;
+        }
+        i = i + 1;
     }
-    
-    while (a > 0) {
-        a = a - 1;
-    }
+
+    print("Resultado acumulado final:", acum);
+    return 0;
 }

@@ -1,13 +1,23 @@
+
+
 function main() {
-    int x, y;
-    x = 5;
-    y=10;
-    
-    if (x > 0) {
-        x = 10;
+    total = duplicar(10);
+    ajuste = -5;
+    int total, ajuste;
+
+    total = total + ajuste;
+
+    if (total >= 15) {
+        print("Total mayor o igual a quince:", total);
     } else {
-        x = 20;
+        print("Total menor a quince:", total);
     }
-    
+
     return 0;
+}
+
+function duplicar(int valor) {
+    res = valor * 2;
+    int res;
+    return res;
 }

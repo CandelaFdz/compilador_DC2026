@@ -1,12 +1,10 @@
-function calcularPromedio(int a, int b, int c, int d) {
-    int suma;
-    suma = a + b + c + d;
-    return suma / 4;
-}
-
 function main() {
-    int x;
+    int x, y;
     x = 10;
-    print("Continua analizando main:", x);
+
+    /* Error sintactico: llamada con 4 parametros (maximo permitido es 3) */
+    y = sumarCuatro(1, 2, 3, 4);
+
+    print("Se recupero del error de parametros:", x);
     return 0;
 }
