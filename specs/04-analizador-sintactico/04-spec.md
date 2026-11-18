@@ -38,7 +38,7 @@ Crear el "sintactico.py" donde se traduzca la gramatica de "./diseno/spec.md" y 
 ## 5. Estructura de sintactico.py
 * Importación: Importación de la clase `AnalizadorLexico` y tokens desde `lexico.py`.
 * Traduce exactamente la gramática de ./diseno/spec a funciones `p_[regla](p)` en Python. Los nombres en mayúscula representan los tokens importados de `lexico.py`
- - Como en la gramatica se utilizan los loterales (como +,-,(,)) se deben traducir a su token correspondiente como `SUMA`, `MAYOR_E` para `>=`, etc.
+ - Como en la gramatica se utilizan los literales (como +,-,(,)) se deben traducir a su token correspondiente como `SUMA`, `MAYOR_E` para `>=`, etc.
 * Trazabilidad (Proceso de Parsing) y main : El proceso de *shift/reduce* debe visualizarse en consola utilizando la herramienta nativa de PLY, habilitando el parámetro `debug=True` al llamar a `parser.parse()` y utilizando el módulo `logging` de Python para que la salida sea legible. Ademas se debe incluir un bloque main que instancie el parser y el `AnalizadorLexico()`, y permita procesar los archivos de casos de prueba
 * Manejo de Errores y Panic Mode: Definir `p_error(p)` para imprimir en que linea exacta ocurre.
 
