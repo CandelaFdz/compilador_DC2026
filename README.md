@@ -8,13 +8,14 @@
 
 ## TP asignado
 
-_(número de trabajo práctico / variante asignada por la cátedra)_
+_GRUPO A_
 
 ## Lenguaje
 
-- **Lenguaje fuente:** _(el lenguaje que compila este compilador)_
-- **Lenguaje de implementación:** _(Java / C / etc.)_
-- **Arquitectura destino:** _(assembler generado)_
+- **Lenguaje fuente:** _Tercet_ , un lenguaje con funciones estructuras de control, tipos enteros y ocultamiento.
+- **Lenguaje de implementación:** _Python (`PLY`)_
+- **Arquitectura destino:** _MASM sobre Windows (`salida.asm` / `salida.exe`)._
+
 
 ## Cómo compilar
 
@@ -28,11 +29,7 @@ _(número de trabajo práctico / variante asignada por la cátedra)_
 
 ## Estructura del repositorio
 
-- `docs/` — entregables formales de cada etapa
 - `src/` — código del compilador
 - `tests/` — casos de prueba
-  - `correctos/` — programas que deben compilar sin errores
-  - `errores-lexicos-sintacticos/`
-  - `errores-semanticos/`
 - `out/` — tercetos, tabla de símbolos exportada, `.asm` generado
-- `specs/` — especificaciones y bitácoras por etapa
+- `specs/` — especificacionespor etapa
